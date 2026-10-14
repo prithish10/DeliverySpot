@@ -1323,7 +1323,7 @@ function seitenInhalt() {
       </div>
     `
   }
-  // 15 – PROBLEM MELDEN
+  // 15 – PROBLEM MELDEN – URBAN DESIGN
   if (seite === 15) {
     const gruende = [
       [
@@ -1340,44 +1340,67 @@ function seitenInhalt() {
       ]
     ]
     return `
-      ${titel('Was ist vor Ort los?', 'Wähle den passenden Meldegrund.')}
-      <div class="zonenliste">
-        ${gruende.map(([name, beschreibung], index) => `
-          <button class="zonenkarte" data-action="melden:${index}">
-            ${icon('warnung')}
-            <span class="zonentext">
-              <strong>${sicher(name)}</strong>
-              <span>${sicher(beschreibung)}</span>
-            </span>
-            <span aria-hidden="true">›</span>
-          </button>
-        `).join('')}
-      </div>
-      ${hinweis(
-        'Wenn du hier nicht entladen kannst, wähle eine andere Zone.'
-      )}
-      <div class="aktionen unten">
-        ${knopf('Abbrechen', 'zur-ankunft', 'secondary')}
-      </div>
+      <section class="ds-problem-seite">
+        <header class="ds-problem-hero">
+          <div class="ds-problem-hero-zeile">
+            <span class="ds-problem-symbol">${icon('warnung')}</span>
+            <div class="ds-problem-hero-text">
+              <h1>Was ist vor Ort los?</h1>
+              <p>Wähle den passenden Meldegrund.</p>
+            </div>
+          </div>
+        </header>
+
+        <div class="ds-problem-gruende" aria-label="Meldegrund auswählen">
+          ${gruende.map(([name, beschreibung], index) => `
+            <button type="button" class="ds-problem-option" data-action="melden:${index}">
+              <span class="ds-problem-option-icon">${icon('warnung')}</span>
+              <span class="ds-problem-option-text">
+                <strong>${sicher(name)}</strong>
+                <small>${sicher(beschreibung)}</small>
+              </span>
+              <span class="ds-problem-chevron" aria-hidden="true">›</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <div class="ds-problem-hinweis">
+          ${icon('info')}
+          <p>Wenn du hier nicht entladen kannst, wähle eine andere Zone.</p>
+        </div>
+
+        <div class="ds-problem-aktionen">
+          ${knopf('Abbrechen', 'zur-ankunft', 'secondary')}
+        </div>
+      </section>
     `
   }
-  // 16 – MELDUNG BESTÄTIGT
+  // 16 – MELDUNG BESTÄTIGT – URBAN REDESIGN
   if (seite === 16) {
     return `
-      ${titel(
-        'Danke für deinen Hinweis.',
-        'Deine Meldung wurde auf diesem Gerät gespeichert.'
-      )}
-      <div class="bestaetigung">
-        <div class="erfolgskreis neutral">${icon('check')}</div>
-        <h2>Wie geht es weiter?</h2>
-        <p>${sicher(zustand.meldung)}</p>
-        <p>Prüfe eine andere Ladezone für deine aktuelle Lieferung.</p>
-      </div>
-      <div class="aktionen">
-        ${knopf('Andere Ladezone finden', 'ergebnisse')}
-        ${knopf('Zur Startseite', 'start', 'secondary')}
-      </div>
+      <section class="ds-meldung-erfolg">
+        <header class="ds-meldung-hero">
+          <span class="ds-meldung-symbol" aria-hidden="true">${icon('check')}</span>
+          <div class="ds-meldung-hero-inhalt">
+            <h1>Danke für deinen Hinweis.</h1>
+            <p>Deine Meldung wurde auf diesem Gerät gespeichert.</p>
+          </div>
+        </header>
+
+        <section class="ds-meldung-naechster-schritt">
+          <div class="ds-meldung-schritt-kopf">
+            <span class="ds-meldung-schritt-icon" aria-hidden="true">${icon('info')}</span>
+            <h2>Wie geht es weiter?</h2>
+          </div>
+          <div class="ds-meldung-grund">${sicher(zustand.meldung)}</div>
+          <p>Prüfe eine andere Ladezone für deine aktuelle Lieferung.</p>
+        </section>
+
+        <div class="ds-meldung-aktionen">
+          ${knopf('Andere Ladezone finden', 'ergebnisse')}
+          ${knopf('Zur Startseite', 'start', 'secondary')}
+        </div>
+      </section>
     `
   }
   // 17 – LIEFERUNG ABGESCHLOSSEN – URBAN REDESIGN
@@ -1513,15 +1536,15 @@ function seitenInhalt() {
         <h2 id="ds-info-ablauf" class="ds-info-section-title">So funktioniert DeliverySpot</h2>
         <div class="ds-info-steps">
           <article class="ds-info-step">
-            <span class="ds-info-step-number">01</span>
+            <span class="ds-info-step-number">1.</span>
             <div><h3>Lieferziel auswählen</h3><p>Gib Strasse und Hausnummer in der Stadt Bern ein.</p></div>
           </article>
           <article class="ds-info-step">
-            <span class="ds-info-step-number">02</span>
+            <span class="ds-info-step-number">2.</span>
             <div><h3>Ladezonen vergleichen</h3><p>Prüfe Entfernung, bekannte Angaben und die Beschilderung.</p></div>
           </article>
           <article class="ds-info-step">
-            <span class="ds-info-step-number">03</span>
+            <span class="ds-info-step-number">3.</span>
             <div><h3>Stopp planen und liefern</h3><p>Wähle eine Parkfläche und prüfe sie bei deiner Ankunft.</p></div>
           </article>
         </div>
