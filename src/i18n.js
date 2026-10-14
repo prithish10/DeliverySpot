@@ -279,6 +279,114 @@ Route nicht verfügbar. Internetverbindung prüfen und erneut versuchen. | Itin�
 GPS-Position wird ermittelt. Standortzugriff bitte erlauben. | Localisation GPS en cours. Autorisez l’accès. | Rilevamento GPS in corso. Consenti l’accesso. | Determinar la posiziun GPS. Permetter l’access. | Locating GPS position. Please allow access.
 Du befindest dich in der Nähe des Parkplatzes. Beschilderung prüfen. | Vous êtes près du parking. Vérifiez les panneaux. | Sei vicino al parcheggio. Controlla i segnali. | Ti es damanaivel dal parcadi. Controllar ils signals. | You are near the parking area. Check the signs.
 Nur Navigationshilfe für den MVP. Verkehrsregeln, Beschilderung und Strassensituation vor Ort beachten. Nicht während der Fahrt bedienen. | Aide à la navigation uniquement. Respectez les règles et panneaux. Ne manipulez pas en conduisant. | Solo ausilio alla navigazione. Rispetta le regole e i segnali. Non usare durante la guida. | Agid da navigaziun. Resguardar las reglas e signals. Betg utilisar durant il viadi. | Navigation aid only. Follow traffic rules and signs. Do not operate while driving.
+
+INTELLIGENTE LIEFERUNG · BERN | LIVRAISON INTELLIGENTE · BERNE | CONSEGNE INTELLIGENTI · BERNA | CONSEGNA INTELLIGENTA · BERNA | SMART DELIVERY · BERN
+Für Lieferungen in der Stadt Bern | Pour les livraisons en ville de Berne | Per le consegne nella città di Berna | Per consegnas en la citad da Berna | For deliveries in the city of Bern
+LIEFERUNG PLANEN · BERN | PLANIFIER UNE LIVRAISON · BERNE | PIANIFICARE UNA CONSEGNA · BERNA | PLANISAR INA CONSEGNA · BERNA | PLAN A DELIVERY · BERN
+Prüfe dein Lieferziel und starte danach die Parkplatzsuche. | Vérifiez la destination, puis recherchez un stationnement. | Controlla la destinazione, poi cerca un parcheggio. | Controllescha la destinaziun e tschertga lura in parcadi. | Check your delivery destination, then search for parking.
+Ladezonen anzeigen → | Afficher les zones de livraison → | Mostra le zone di carico → | Mussar las zonas da chargiar → | Show loading zones →
+AUSGEWÄHLTE PARKFLÄCHE | EMPLACEMENT SÉLECTIONNÉ | AREA DI SOSTA SELEZIONATA | PLAZ DA PARCAR TSCHERNÌ | SELECTED PARKING SPACE
+ENTFERNUNG ZUM LIEFERZIEL | DISTANCE DE LA DESTINATION | DISTANZA DALLA DESTINAZIONE | DISTANZA FIN A LA DESTINAZIUN | DISTANCE TO DELIVERY DESTINATION
+Entfernung zum Lieferziel | Distance jusqu’à la destination | Distanza dalla destinazione | Distanza fin a la destinaziun | Distance to delivery destination
+Erfasste Parkfläche in der Nähe deines Lieferziels. | Emplacement enregistré près de votre destination. | Area di sosta registrata vicino alla destinazione. | Plaz da parcar registrà damanaivel da tia destinaziun. | Recorded parking space near your delivery destination.
+STANDORTDETAILS · BERN | DÉTAILS DE L’EMPLACEMENT · BERNE | DETTAGLI DEL LUOGO · BERNA | DETAGS DAL LIEU · BERNA | LOCATION DETAILS · BERN
+Standort auf der Karte | Emplacement sur la carte | Posizione sulla mappa | Lieu sin la charta | Location on the map
+Informationen zur Parkfläche | Informations sur l’emplacement | Informazioni sul parcheggio | Infurmaziuns dal plaz da parcar | Parking space information
+Belegung | Occupation | Occupazione | Occupaziun | Occupancy
+Unbekannt | Inconnue | Sconosciuta | Nunenconuschenta | Unknown
+Erlaubte Parkdauer | Durée de stationnement autorisée | Durata di sosta consentita | Durada da parcar permessa | Permitted parking duration
+Parkgebühren | Frais de stationnement | Tariffe di parcheggio | Taxas da parcar | Parking charges
+Kostenlos bis 60 min | Gratuit jusqu’à 60 min | Gratuito fino a 60 min | Gratuit fin a 60 min | Free for up to 60 min
+Gesamtgewicht | Poids total | Peso totale | Pais total | Total weight
+Bis 3,5 t | Jusqu’à 3,5 t | Fino a 3,5 t | Fin a 3,5 t | Up to 3.5 t
+Über 3,5 t | Plus de 3,5 t | Oltre 3,5 t | Sur 3,5 t | Over 3.5 t
+Lieferwagen | Fourgonnette | Furgone | Furgun | Delivery van
+Personenwagen | Voiture | Automobile | Auto | Car
+Lastwagen | Camion | Camion | Camium | Lorry
+Luftlinie | À vol d’oiseau | In linea d’aria | En lingia directa | As the crow flies
+Luftlinie · Keine berechnete Fahrstrecke | Distance à vol d’oiseau · Pas d’itinéraire routier calculé | In linea d’aria · Non è un percorso stradale calcolato | En lingia directa · Nagina ruta stradala calculada | Straight-line distance · Not a calculated road route
+Beschilderung und örtliche Bedingungen vor dem Parkieren prüfen. Diese Auswahl reserviert keinen Platz. | Vérifiez la signalisation et les règles locales avant de stationner. Ce choix ne réserve aucune place. | Controlla i segnali e le condizioni locali prima di parcheggiare. La selezione non riserva un posto. | Controllescha la signalisaziun e las reglas localas avant da parcar. La tscherna na reservescha nagin plaz. | Check signs and local conditions before parking. Selecting a space does not reserve it.
+Weg zur Parkfläche ansehen → | Voir l’itinéraire vers le parking → | Visualizza il percorso verso il parcheggio → | Guardar la ruta al parcadi → | View directions to the parking space →
+Parkfläche nicht gefunden | Emplacement introuvable | Parcheggio non trovato | Plaz da parcar betg chattà | Parking space not found
+Bitte starte eine neue Suche. | Veuillez lancer une nouvelle recherche. | Avvia una nuova ricerca. | Cumenza ina nova tschertga. | Please start a new search.
+ROUTENPLANUNG · BERN | PLANIFICATION D’ITINÉRAIRE · BERNE | PIANIFICAZIONE PERCORSO · BERNA | PLANISAZIUN DA LA RUTA · BERNA | ROUTE PLANNING · BERN
+Dein Weg zur Parkfläche | Votre trajet vers le parking | Il tuo percorso verso il parcheggio | Tia ruta al parcadi | Your route to the parking space
+Prüfe den Standort und starte danach die Navigation. | Vérifiez l’emplacement, puis lancez la navigation. | Controlla il parcheggio, poi avvia la navigazione. | Controllescha il lieu e cumenza lura la navigaziun. | Check the parking location, then start navigation.
+Die gestrichelte Linie dient zur Orientierung und zeigt keine berechnete Strassenroute. | La ligne pointillée est indicative et ne représente pas un itinéraire routier calculé. | La linea tratteggiata è indicativa e non rappresenta un percorso stradale calcolato. | La lingia interrutta serva per orientaziun e na mussa nagina ruta calculada. | The dashed line is for guidance only, not a calculated road route.
+Parkinformationen | Informations de stationnement | Informazioni sul parcheggio | Infurmaziuns da parcar | Parking information
+Vor Ort prüfen | Vérifier sur place | Verificare sul posto | Controllar al lieu | Check on site
+LIEFERSTOPP · BERN | ARRÊT DE LIVRAISON · BERNE | SOSTA DI CONSEGNA · BERNA | STOP DA CONSEGNA · BERNA | DELIVERY STOP · BERN
+Du bist angekommen. | Vous êtes arrivé. | Sei arrivato. | Ti es arrivà. | You have arrived.
+Prüfe den Standort und starte bei Bedarf deine Parkerinnerung. | Vérifiez l’emplacement et lancez un rappel de stationnement si nécessaire. | Controlla il luogo e, se necessario, avvia un promemoria per la sosta. | Controllescha il lieu e cumenza sche necessari ina regurdientscha da parcar. | Check the location and start a parking reminder if needed.
+DEIN LIEFERSTOPP | VOTRE ARRÊT DE LIVRAISON | LA TUA SOSTA DI CONSEGNA | TES STOP DA CONSEGNA | YOUR DELIVERY STOP
+Ist die Parkfläche tatsächlich nutzbar? | La place est-elle réellement utilisable ? | Il parcheggio è effettivamente utilizzabile? | È il plaz da parcar propi utilisabel? | Is the parking space actually usable?
+Andere Parkfläche: {name} | Autre emplacement : {name} | Altro parcheggio: {name} | Auter plaz da parcar: {name} | Other parking space: {name}
+Lieferung abschliessen ✓ | Terminer la livraison ✓ | Completa la consegna ✓ | Terminar la consegna ✓ | Complete delivery ✓
+LIEFERSTOPP · ABGESCHLOSSEN | ARRÊT DE LIVRAISON · TERMINÉ | SOSTA DI CONSEGNA · COMPLETATA | STOP DA CONSEGNA · TERMINÀ | DELIVERY STOP · COMPLETED
+ERFOLGREICH ERLEDIGT | TERMINÉ AVEC SUCCÈS | COMPLETATO CON SUCCESSO | TERMINÀ CUN SUCCESS | SUCCESSFULLY COMPLETED
+Deine Lieferung ist abgeschlossen. | Votre livraison est terminée. | La tua consegna è completata. | Tia consegna è terminada. | Your delivery is complete.
+ABGESCHLOSSENER LIEFERSTOPP | ARRÊT DE LIVRAISON TERMINÉ | SOSTA DI CONSEGNA COMPLETATA | STOP DA CONSEGNA TERMINÀ | COMPLETED DELIVERY STOP
+DEINE GESPEICHERTEN PARKFLÄCHEN | VOS EMPLACEMENTS ENREGISTRÉS | I TUOI PARCHEGGI SALVATI | TES PLAZS DA PARCAR MEMORISADS | YOUR SAVED PARKING SPACES
+Gespeicherte Parkflächen schnell wiederfinden. | Retrouvez rapidement vos emplacements enregistrés. | Ritrova rapidamente i parcheggi salvati. | Chatta svelt tes plazs da parcar memorisads. | Quickly find your saved parking spaces.
+Eintrag | Entrée | Voce | Entrada | Entry
+Einträge | Entrées | Voci | Entradas | Entries
+{zahl} Eintrag gespeichert | {zahl} entrée enregistrée | {zahl} voce salvata | {zahl} entrada memorisada | {zahl} entry saved
+{zahl} Einträge gespeichert | {zahl} entrées enregistrées | {zahl} voci salvate | {zahl} entradas memorisadas | {zahl} entries saved
+Noch keine Parkflächen gespeichert | Aucun emplacement enregistré | Nessun parcheggio salvato | Anc nagins plazs da parcar memorisads | No saved parking spaces yet
+Wenn du eine Parkfläche öffnest, kannst du sie dort zur Merkliste hinzufügen. | Ouvrez un emplacement pour l’ajouter à vos favoris. | Apri un parcheggio per aggiungerlo ai salvati. | Avra in plaz da parcar per al agiuntar a tes favurits. | Open a parking space to add it to your saved list.
+Parkregeln und die aktuelle Nutzbarkeit immer vor Ort prüfen. | Vérifiez toujours les règles et la disponibilité sur place. | Controlla sempre sul posto le regole e l’utilizzabilità. | Controllescha adina las reglas e la disponibilitad al lieu. | Always check parking rules and availability on site.
+DEIN LIEFERFAHRZEUG | VOTRE VÉHICULE DE LIVRAISON | IL TUO VEICOLO PER LE CONSEGNE | TES VEHICHEL DA CONSEGNA | YOUR DELIVERY VEHICLE
+Fahrzeugprofil | Profil du véhicule | Profilo del veicolo | Profil dal vehichel | Vehicle profile
+Verwalte deine Fahrzeugangaben für die Lieferplanung. | Gérez les informations du véhicule pour vos livraisons. | Gestisci i dati del veicolo per pianificare le consegne. | Administriescha las datas da tes vehichel per planisar consegnas. | Manage your vehicle details for delivery planning.
+AKTUELLES FAHRZEUG | VÉHICULE ACTUEL | VEICOLO ATTUALE | VEHICHEL ACTUAL | CURRENT VEHICLE
+Fahrzeugangaben bearbeiten | Modifier les informations du véhicule | Modifica i dati del veicolo | Midar las datas dal vehichel | Edit vehicle details
+Zulässiges Gewicht und örtliche Parkbedingungen vor dem Halten prüfen. | Vérifiez les limites de poids et les règles locales avant de vous arrêter. | Controlla i limiti di peso e le regole locali prima di fermarti. | Controllescha las limitas da pais e las reglas localas avant da sa fermar. | Check weight limits and local parking rules before stopping.
+Speichern und Lieferung planen → | Enregistrer et planifier la livraison → | Salva e pianifica la consegna → | Memorisar e planisar la consegna → | Save and plan delivery →
+DELIVERYSPOT · HILFE | DELIVERYSPOT · AIDE | DELIVERYSPOT · AIUTO | DELIVERYSPOT · AGID | DELIVERYSPOT · HELP
+Gut zu wissen | Bon à savoir | Da sapere | Bun da savair | Good to know
+Dein Begleiter für eine übersichtliche Lieferplanung in Bern. | Votre assistant pour organiser facilement vos livraisons à Berne. | Il tuo assistente per pianificare le consegne a Berna. | Tes agid per planisar consegnas a Berna. | Your guide to planning deliveries in Bern.
+Einfach planen. Sicher vor Ort prüfen. | Planifiez simplement. Vérifiez sur place. | Pianifica facilmente. Controlla sul posto. | Planisar simpel. Controllar al lieu. | Plan simply. Check safely on site.
+Lieferziel auswählen | Choisir la destination | Seleziona la destinazione | Tscherner la destinaziun | Choose delivery destination
+Ladezonen vergleichen | Comparer les zones de livraison | Confronta le zone di carico | Cumparegliar zonas da chargiar | Compare loading zones
+Stopp planen und liefern | Planifier l’arrêt et livrer | Pianifica la sosta e consegna | Planisar il stop e livrar | Plan the stop and deliver
+Wähle eine Parkfläche und prüfe sie bei deiner Ankunft. | Choisissez un emplacement et vérifiez les conditions à votre arrivée. | Scegli un parcheggio e verifica le condizioni all’arrivo. | Tscherna in plaz da parcar e controllescha las cundiziuns a l’arrivada. | Choose a parking space and check it on arrival.
+Häufige Fragen | Questions fréquentes | Domande frequenti | Dumondas frequentas | Frequently asked questions
+Ist eine Zone automatisch frei? | Une zone est-elle automatiquement libre ? | Una zona è automaticamente libera? | È ina zona automaticamain libra? | Is a zone automatically available?
+Nein. Die Belegung prüfst du vor Ort. | Non. Vérifiez la disponibilité sur place. | No. Verifica la disponibilità sul posto. | Na. Controllescha l’occupaziun al lieu. | No. Check availability on site.
+Kann ich einen Platz reservieren? | Puis-je réserver une place ? | Posso prenotare un posto? | Poss jau reservar in plaz? | Can I reserve a space?
+Nein. Deine Auswahl plant nur den Stopp. | Non. Votre sélection sert uniquement à planifier l’arrêt. | No. La selezione serve solo a pianificare la sosta. | Na. Tia tscherna planisescha mo il stop. | No. Your selection only plans the stop.
+Was öffnet der Google-Maps-Button? | Que permet d’ouvrir le bouton Google Maps ? | Cosa apre il pulsante Google Maps? | Tge avra il buttun Google Maps? | What does the Google Maps button open?
+Die Routenplanung zu deiner gefundenen Lieferadresse. | L’itinéraire vers l’adresse de livraison trouvée. | Il percorso verso l’indirizzo di consegna trovato. | La ruta vers l’adressa da consegna chattada. | Directions to your selected delivery address.
+GPS-Standort noch nicht verfügbar | Position GPS pas encore disponible | Posizione GPS non ancora disponibile | Posiziun GPS anc betg disponibla | GPS location not yet available
+Meinem Standort folgen | Suivre ma position | Segui la mia posizione | Suandar mia posiziun | Follow my location
+Gesamte Route anzeigen | Afficher l’itinéraire complet | Mostra l’intero percorso | Mussar l’entira ruta | Show full route
+Deine Fahrt | Votre trajet | Il tuo viaggio | Tes viadi | Your journey
+Reststrecke | Distance restante | Distanza rimanente | Distanza restanta | Remaining distance
+Fahrzeit | Durée du trajet | Tempo di percorrenza | Durada dal viadi | Journey time
+Ankunft | Arrivée | Arrivo | Arrivada | Arrival
+Route aktiv | Itinéraire actif | Percorso attivo | Ruta activa | Route active
+Routendaten ohne Kartenlinie erhalten. Route neu berechnen. | Itinéraire reçu sans tracé visible. Recalculez-le. | Percorso ricevuto senza linea sulla mappa. Ricalcola il percorso. | Ruta retschavida senza lingia sin la charta. Calculescha danovamain. | Route received without a visible map line. Recalculate it.
+Verkehrsregeln, Beschilderung und Strassensituation vor Ort beachten. Nicht während der Fahrt bedienen. | Respectez les règles, la signalisation et les conditions routières. Ne l’utilisez pas en conduisant. | Rispetta le norme stradali, i segnali e le condizioni della strada. Non usarlo durante la guida. | Resguarda las reglas, ils signals e la situaziun sin via. Betg duvrar durant il viadi. | Follow road rules, signs and local conditions. Do not operate while driving.
+↻ Route neu berechnen | ↻ Recalculer l’itinéraire | ↻ Ricalcola il percorso | ↻ Calcular danovamain la ruta | ↻ Recalculate route
+✓ Ich bin angekommen | ✓ Je suis arrivé | ✓ Sono arrivato | ✓ Jau sun arrivà | ✓ I have arrived
+Andere Parkflächen ansehen | Voir d’autres emplacements | Vedi altri parcheggi | Guardar auters plazs da parcar | View other parking spaces
+Nicht in den Geodaten enthalten | Non indiqué dans les données | Non incluso nei geodati | Betg cuntegnì en las geodatas | Not included in the geodata
+Andere Parkfläche: {name} | Autre emplacement : {name} | Altro parcheggio: {name} | Auter plaz da parcar: {name} | Other parking space: {name}
+Parkfläche {id} | Emplacement {id} | Parcheggio {id} | Plaz da parcar {id} | Parking space {id}
+Parkdauer und Bedingungen vor Ort prüfen | Vérifier la durée et les conditions sur place | Verifica durata e condizioni sul posto | Controllar durada e cundiziuns al lieu | Check duration and conditions on site
+Abbrechen | Annuler | Annulla | Annullar | Cancel
+Erinnerungsdauer frei wählbar · Parkregeln vor Ort prüfen. | Durée du rappel au choix · Vérifiez les règles sur place. | Durata del promemoria a scelta · Controlla le regole sul posto. | Durada da regurdientscha tschernibla · Controllar las reglas al lieu. | Choose reminder duration · Check parking rules on site.
+
+Entfernung | Distance | Distanza | Distanza | Distance
+Dein Fahrzeugprofil liegt über der hier angegebenen Gewichtsgrenze. | Le poids indiqué dans votre profil dépasse la limite affichée ici. | Il peso indicato nel profilo del veicolo supera il limite riportato. | Il pais en tes profil da vehichel surpassa la limita inditgada qua. | Your vehicle profile exceeds the weight limit shown here.
+♫ Sprachausgabe | ♫ Guidage vocal | ♫ Guida vocale | ♫ Navigaziun cun vusch | ♫ Voice guidance
+♫ Ton ausschalten | ♫ Désactiver le son | ♫ Disattiva audio | ♫ Stizzar il tun | ♫ Mute sound
+Andere Parkfläche | Autre emplacement | Altro parcheggio | Auter plaz da parcar | Other parking space
+Suche | Recherche | Cerca | Tschertga | Search
+Gespeicherte Parkflächen | Emplacements enregistrés | Parcheggi salvati | Plazs da parcar memorisads | Saved parking spaces
+Aus Merkliste entfernen | Retirer des favoris | Rimuovi dai salvati | Allontanar dals favurits | Remove from saved
+Parkfläche aus Merkliste entfernen | Retirer l’emplacement des favoris | Rimuovi il parcheggio dai salvati | Allontanar il plaz da parcar dals favurits | Remove parking space from saved
+Sprache auswählen | Choisir la langue | Scegli la lingua | Tscherner la lingua | Select language
 `.trim()
 
 // Kleine Schreibkorrektur für lateinische Buchstaben.
@@ -375,6 +483,19 @@ export function uebersetzen(value) {
       })
 
       break
+    }
+  }
+
+  // Dynamische Fahrzeugangaben (z. B. "Lieferwagen · Bis 3,5 t")
+  // übersetzen, ohne die gespeicherten Formularwerte zu verändern.
+  if (!ergebnis && normal.includes(' · ')) {
+    const teile = normal.split(' · ')
+    const übersetzt = teile.map(teil => {
+      const gefunden = woerterbuch.get(teil.trim())
+      return gefunden ? gefunden[aktuelleSprache] : teil
+    })
+    if (übersetzt.some((teil, index) => teil !== teile[index])) {
+      ergebnis = übersetzt.join(' · ')
     }
   }
 

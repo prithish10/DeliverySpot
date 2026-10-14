@@ -1239,10 +1239,10 @@ input::placeholder {
 .urban-brandtext small { font-size: 8px; font-weight: 800; letter-spacing: 1.1px; color: #8491a0; }
 .app:has(.urban-intro) main { gap: 15px; padding: 0 20px 24px; }
 /* i18n.js fuegt die bestehende Sprachauswahl ein – Auswahl/Events bleiben erhalten. */
-.app:has(.urban-intro) .sprachwahl { align-self: flex-end; width: max-content; max-width: 100%; gap: 7px; margin: -64px 0 12px; position: relative; z-index: 2; }
-.app:has(.urban-intro) .sprachwahl::before { content: '🌐'; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: #fff; border: 1px solid #e6e8ec; font-size: 20px; }
-.app:has(.urban-intro) .sprachwahl label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.app:has(.urban-intro) .sprachwahl select { width: 92px; min-height: 38px; padding: 7px 19px 7px 7px; background: #fff; border: 1px solid #e6e8ec; border-radius: 12px; font-size: 12px; font-weight: 700; color: #192b43; }
+
+
+
+
 .urban-intro { padding: 19px 19px 17px; border-radius: 21px; color: #fff; background: linear-gradient(125deg,#192b43 0%,#2d4968 100%); box-shadow: 0 10px 25px rgba(25,43,67,.13); }
 .urban-kicker { display: block; font-size: 9px; font-weight: 800; letter-spacing: 1.25px; color: #ffb36e; }
 .urban-intro h1 { margin: 8px 0 9px; color: #fff; line-height: 1.1; font-size: 28px; letter-spacing: -.8px; }
@@ -1271,7 +1271,365 @@ input::placeholder {
 @media(max-width:380px) {
   .app:has(.urban-intro) main { padding-left: 15px; padding-right: 15px; }
   .app:has(.urban-intro) .kopf { padding-left: 15px; padding-right: 15px; }
-  .app:has(.urban-intro) .sprachwahl { margin-top: -61px; }
+  
   .urban-intro h1 { font-size: 25px; }
   .urban-map-card .karte { height: 225px; }
+}
+
+
+/* ==================================================
+   DELIVERYSPOT URBAN – SUCHERGEBNISSE (SCHRITT 7)
+   Isolierte Styles: Startseite und Navigation bleiben unveraendert.
+   ================================================== */
+.ds-ergebnisse-header { display:flex; flex-direction:column; gap:7px; padding:4px 1px 0; }
+.ds-ergebnisse-kicker { display:block; font-size:10px; font-weight:800; letter-spacing:1.1px; color:#ee8034; }
+.ds-ergebnisse-header h1 { margin:0; color:#192b43; font-size:27px; line-height:1.17; }
+.ds-ergebnisse-header p { color:#718093; font-size:12px; }
+.ds-ergebnisse-ziel { display:flex; flex-direction:column; gap:9px; padding:19px; border-radius:19px; background:linear-gradient(125deg,#192b43,#2d4968); box-shadow:0 8px 24px rgba(25,43,67,.14); }
+.ds-ergebnisse-ziel .ds-ergebnisse-kicker { color:#ffb36e; }
+.ds-ergebnisse-ziel strong { color:#fff; font-size:17px; line-height:1.35; overflow-wrap:anywhere; }
+.ds-ergebnisse-ziel small { color:#d7e1ec; font-size:11px; }
+.ds-ergebnisse-tabs .tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+.ds-ergebnisse-tabs .button { min-height:46px; border-radius:12px; font-size:12px; }
+.ds-ergebnisse-tabs .button.primary { background:#192b43; color:#fff; }
+.ds-ergebnisse-tabs .button.secondary { background:#fff; border-color:#e4eaf0; }
+.ds-ergebnisse-mapcard { display:flex; flex-direction:column; gap:12px; padding:15px; background:#fff; border:1px solid #e5eaf0; border-radius:19px; box-shadow:0 6px 20px rgba(25,43,67,.045); }
+.ds-ergebnisse-mapkopf { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.ds-ergebnisse-mapkopf h2 { margin:0; color:#192b43; font-size:15px; }
+.ds-ergebnisse-mapkopf span { color:#748093; font-size:11px; flex-shrink:0; }
+.ds-ergebnisse-mapcard .karte { height:270px; border:0; border-radius:14px; }
+.ds-ergebnisse-auswahl { display:flex; flex-direction:column; gap:12px; }
+.ds-ergebnisse-listenkopf { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+.ds-ergebnisse-listenkopf h2 { font-size:15px; color:#192b43; margin:0; }
+.ds-ergebnisse-listenkopf span { font-size:11px; font-weight:800; color:#ee8034; white-space:nowrap; }
+.ds-ergebnis-karte { display:flex; flex-direction:column; gap:15px; padding:16px; background:#fff; border:1px solid #e5eaf0; border-radius:18px; box-shadow:0 5px 18px rgba(25,43,67,.045); }
+.ds-ergebnis-oben { display:flex; align-items:flex-start; gap:11px; }
+.ds-ergebnis-buchstabe { display:grid; place-items:center; flex:0 0 41px; height:41px; background:#fff0e4; color:#192b43; border-radius:13px; font-size:16px; font-weight:800; }
+.ds-ergebnis-beschreibung { display:flex; flex:1; flex-direction:column; min-width:0; gap:5px; }
+.ds-ergebnis-beschreibung strong { font-size:13px; color:#192b43; line-height:1.35; overflow-wrap:anywhere; }
+.ds-ergebnis-beschreibung span { color:#718093; font-size:11px; }
+.ds-ergebnis-distanz { flex-shrink:0; color:#192b43; font-size:12px; font-weight:800; }
+.ds-ergebnis-status { display:flex; align-items:center; gap:7px; padding:10px; border-radius:11px; background:#f5f7fa; font-size:11px; line-height:1.35; color:#627183; }
+.ds-ergebnis-status svg { width:16px; height:16px; color:#ed843c; }
+.ds-ergebnis-aktion { min-height:48px; border-radius:12px; font-size:12px; gap:8px; }
+.ds-ergebnisse-leer { display:flex; flex-direction:column; align-items:center; text-align:center; gap:9px; padding:22px; background:#fff; border:1px solid #e5eaf0; border-radius:17px; }
+.ds-ergebnisse-leer svg { color:#ef8739; }
+.ds-ergebnisse-leer strong { font-size:13px; color:#192b43; }
+.ds-ergebnisse-leer p { font-size:11px; color:#718093; }
+.ds-ergebnisse-hinweis { color:#6b7887; font-size:11px; line-height:1.6; padding:0 2px; }
+@media(max-width:380px) { .ds-ergebnisse-ziel { padding:16px; } .ds-ergebnisse-mapcard .karte { height:235px; } .ds-ergebnisse-header h1 { font-size:24px; } }
+
+/* =============================================
+   DELIVERYSPOT – SCHRITT 8: PARKFLAECHENDETAILS
+   ============================================= */
+.ds-detail-header { display:flex; flex-direction:column; gap:8px; padding:4px 0 2px; }
+.ds-detail-eyebrow { color:#e77a2e; font-size:10px; font-weight:800; letter-spacing:1px; }
+.ds-detail-header h1 { margin:0; color:#192b43; font-size:25px; line-height:1.22; overflow-wrap:anywhere; }
+.ds-detail-header p { color:#69798a; font-size:12px; }
+.ds-detail-summary { display:flex; align-items:center; gap:14px; padding:18px; border-radius:19px; background:linear-gradient(125deg,#192b43,#2e4a69); color:#fff; box-shadow:0 8px 25px rgba(25,43,67,.12); }
+.ds-detail-zoneid { display:grid; place-items:center; flex:0 0 48px; width:48px; height:48px; border-radius:15px; background:#ff8838; color:#17273a; font-weight:900; font-size:19px; }
+.ds-detail-summarytext { display:flex; flex-direction:column; gap:5px; min-width:0; }
+.ds-detail-summarytext > span { font-size:9px; color:#ffb36e; font-weight:800; letter-spacing:.7px; }
+.ds-detail-summarytext strong { font-size:23px; letter-spacing:-.5px; }
+.ds-detail-summarytext strong small { font-size:11px; color:#d6e2ee; font-weight:500; letter-spacing:0; }
+.ds-detail-summarytext p { color:#d6e2ee; font-size:11px; overflow-wrap:anywhere; line-height:1.4; }
+.ds-detail-mapcard,.ds-detail-infocard { display:flex; flex-direction:column; gap:13px; padding:16px; border:1px solid #e5eaf0; border-radius:19px; background:#fff; box-shadow:0 5px 20px rgba(25,43,67,.05); }
+.ds-detail-sectiontop { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.ds-detail-sectiontop h2,.ds-detail-infocard h2 { margin:0; color:#192b43; font-size:16px; }
+.ds-detail-sectiontop span { color:#788697; font-size:11px; }
+.ds-detail-mapcard .karte { height:265px; border-radius:14px; border:0; }
+.ds-detail-facts { display:flex; flex-direction:column; margin:0; }
+.ds-detail-facts > div { display:flex; justify-content:space-between; gap:15px; padding:13px 0; border-bottom:1px solid #eef1f4; }
+.ds-detail-facts > div:last-child { border-bottom:0; padding-bottom:2px; }
+.ds-detail-facts dt,.ds-detail-facts dd { margin:0; font-size:11px; line-height:1.5; }
+.ds-detail-facts dt { color:#718092; flex:1; }
+.ds-detail-facts dd { color:#192b43; text-align:right; font-weight:700; flex:1; overflow-wrap:anywhere; }
+.ds-detail-sicherheit { display:flex; gap:10px; padding:13px; border-radius:13px; background:#fff2e8; color:#6b5548; }
+.ds-detail-sicherheit svg { width:19px; height:19px; color:#e57d36; flex-shrink:0; }
+.ds-detail-sicherheit p { font-size:11px; line-height:1.6; }
+.ds-detail-actions { display:flex; flex-direction:column; gap:10px; padding-bottom:8px; }
+.ds-detail-actions .button { min-height:51px; border-radius:13px; font-size:12px; }
+.ds-detail-actions .button.secondary { background:#fff; border-color:#e4eaf0; color:#192b43; }
+@media(max-width:380px) { .ds-detail-summary { padding:15px; } .ds-detail-header h1 { font-size:22px; } .ds-detail-mapcard .karte { height:225px; } }
+
+
+/* Schritt 8 – Details: keine leere Flaeche vor Aktionen */
+.app:has(.ds-detail-header) .ds-detail-actions { margin-top: 0; padding-bottom: 8px; }
+.app:has(.ds-detail-header) .ds-detail-header h1 { overflow-wrap: anywhere; }
+.app:has(.ds-detail-header) .ds-detail-mapcard .karte { width: 100%; }
+
+/* DELIVERYSPOT – URBAN ANKUNFT & TIMER */
+.ds-ankunft{display:flex;flex-direction:column;gap:16px}
+.ds-ankunft-kopf{display:flex;flex-direction:column;gap:7px}
+.ds-ankunft-eyebrow{color:#e77a2e;font-size:10px;font-weight:800;letter-spacing:1.2px}
+.ds-ankunft-kopf h1{margin:0;color:#192b43;font-size:25px;line-height:1.2}
+.ds-ankunft-kopf p{color:#64748b;font-size:12px}
+.ds-ankunft-hero{display:flex;align-items:center;gap:14px;padding:20px;border-radius:20px;background:linear-gradient(135deg,#192b43,#294767);box-shadow:0 8px 24px rgba(25,43,67,.12)}
+.ds-ankunft-icon{display:grid;place-items:center;width:48px;height:48px;flex-shrink:0;border-radius:14px;background:#ff8838;color:#192b43}
+.ds-ankunft-icon svg{width:23px;height:23px}
+.ds-ankunft-hero-text{display:flex;flex-direction:column;min-width:0;gap:6px}
+.ds-ankunft-hero-text small{color:#ffb36e;font-size:9px;font-weight:800;letter-spacing:.8px}
+.ds-ankunft-hero-text strong{color:white;font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.ds-ankunft-hero-text span{color:#d7e1ec;font-size:11px}
+.ds-ankunft-checkliste{display:flex;flex-direction:column;gap:15px;padding:19px;border:1px solid #e6e8ec;border-radius:19px;background:white}
+.ds-ankunft-checkliste h2{margin:0 0 3px;color:#192b43;font-size:16px}
+.ds-ankunft-check{display:flex;align-items:flex-start;gap:11px}
+.ds-ankunft-check svg{width:19px;height:19px;flex-shrink:0;color:#e77a2e}
+.ds-ankunft-check span{color:#192b43;font-size:12px;line-height:1.5}
+.ds-ankunft-timer .parking-timer{display:flex;flex-direction:column;gap:15px;padding:22px 19px;border:1px solid #e6e8ec;border-radius:20px;background:white;box-shadow:0 5px 20px rgba(25,43,67,.04)}
+.ds-ankunft-timer .parking-timer-kopf h2{color:#192b43;font-size:18px}
+.ds-ankunft-timer .parking-timer .badge{padding:7px 12px;border-radius:999px;background:#fff0e4;color:#b75e20;font-weight:800}
+.ds-ankunft-timer .parking-timer-zeit{margin:5px 0 0;color:#192b43;font-size:clamp(48px,14vw,62px);font-weight:800;line-height:1.1;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+.ds-ankunft-timer .parking-timer-status{color:#64748b;font-size:12px}
+.ds-ankunft-timer .parking-timer-track{height:8px;border-radius:999px;background:#e9edf2}
+.ds-ankunft-timer .parking-timer-track>div{background:#ff8838}
+.ds-ankunft-timer .parking-timer label{margin:3px 0 -8px;color:#64748b;font-size:11px}
+.ds-ankunft-timer #timer-dauer{min-height:52px;border:1px solid #e6e8ec;border-radius:13px;background:#f5f7fa;color:#192b43}
+.ds-ankunft-timer .parking-timer-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ds-ankunft-timer .parking-timer-buttons .button{min-width:0;min-height:53px;padding:10px 8px;border-radius:13px;font-size:11px}
+.ds-ankunft-timer .parking-timer-buttons .primary{background:#ff8838}
+.ds-ankunft-timer .parking-timer-buttons .secondary{background:#f5f7fa;border:1px solid #e6e8ec}
+.ds-ankunft-timer .parking-timer>.klein{color:#64748b;font-size:10px;line-height:1.6}
+.ds-ankunft-aktionen{display:flex;flex-direction:column;gap:10px;margin-top:0}
+.ds-ankunft-aktionen .button{min-height:51px;border-radius:13px}
+.ds-ankunft-aktionen .button:first-child{min-height:55px;background:#ff8838;font-size:13px;font-weight:800}
+.ds-ankunft-aktionen .button:not(:first-child){background:white;border:1px solid #e6e8ec;color:#192b43}
+.ds-ankunft-aktionen .button:last-child{background:#fff0e4;border-color:#f2e3d7}
+@media(max-width:350px){.ds-ankunft-hero,.ds-ankunft-checkliste,.ds-ankunft-timer .parking-timer{padding:16px}}
+@media(prefers-reduced-motion:reduce){.ds-ankunft-timer .parking-timer-track>div{transition:none}}
+
+
+/* DELIVERYSPOT – SCHRITT 10: MERKLISTE & FAHRZEUGPROFIL */
+.ds-profil-head{display:flex;flex-direction:column;gap:7px}
+.ds-profil-eyebrow{color:#e77a2e;font-size:10px;font-weight:800;letter-spacing:1.1px}
+.ds-profil-head h1{margin:0;color:#192b43;font-size:27px;line-height:1.15}
+.ds-profil-head p{color:#64748b;font-size:12px}
+.ds-merk-counter{color:#64748b;font-size:11px;font-weight:700}
+.ds-merk-liste{display:flex;flex-direction:column;gap:11px}
+.ds-merk-item{display:flex;align-items:flex-start;gap:12px;padding:16px;background:#fff;border:1px solid #e6e8ec;border-radius:18px;box-shadow:0 4px 16px rgba(25,43,67,.04)}
+.ds-merk-marker{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:13px;background:#fff0e4;color:#192b43;font-weight:800;font-size:17px}
+.ds-merk-inhalt{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px}
+.ds-merk-inhalt strong{font-size:14px;color:#192b43}
+.ds-merk-inhalt p{font-size:11px;color:#64748b;overflow-wrap:anywhere}
+.ds-merk-link{align-self:flex-start;border:0;background:none;padding:5px 0;color:#ce6d25;font-size:11px;font-weight:800;text-align:left}
+.ds-merk-entfernen{width:36px;height:36px;flex-shrink:0;display:grid;place-items:center;border:1px solid #e6e8ec;border-radius:11px;background:#f5f7fa;color:#425166;font-size:22px}
+.ds-merk-entfernen:focus-visible,.ds-merk-link:focus-visible{outline:2px solid #192b43;outline-offset:3px}
+.ds-merk-leer{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:30px 23px;background:#fff;border:1px solid #e6e8ec;border-radius:20px}
+.ds-merk-leericon{display:grid;place-items:center;width:58px;height:58px;border-radius:18px;background:#fff0e4;color:#e77a2e}
+.ds-merk-leericon svg{width:28px;height:28px}
+.ds-merk-leer h2{margin:0;color:#192b43;font-size:17px}
+.ds-merk-leer p{color:#64748b;font-size:12px}
+.ds-merk-hinweis{padding:12px 14px;border-radius:12px;background:#fff0e4;color:#75513b;font-size:11px}
+.ds-fahrzeug-hero{display:flex;align-items:center;gap:14px;padding:22px 19px;border-radius:20px;background:linear-gradient(135deg,#192b43,#294767);box-shadow:0 8px 24px rgba(25,43,67,.12)}
+.ds-fahrzeug-icon{display:grid;place-items:center;width:50px;height:50px;flex-shrink:0;border-radius:14px;background:#ff8838;color:#192b43}
+.ds-fahrzeug-icon svg{width:27px;height:27px}
+.ds-fahrzeug-hero-text{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ds-fahrzeug-hero-text small{font-size:9px;font-weight:800;letter-spacing:.8px;color:#ffb36e}
+.ds-fahrzeug-hero-text strong{font-size:17px;color:#fff;overflow-wrap:anywhere}
+.ds-fahrzeug-hero-text span{font-size:11px;color:#d7e1ec}
+.ds-fahrzeug-form{display:flex;flex-direction:column;gap:15px;padding:20px;background:#fff;border:1px solid #e6e8ec;border-radius:20px;box-shadow:0 4px 16px rgba(25,43,67,.04)}
+.ds-fahrzeug-form h2{margin:0 0 2px;color:#192b43;font-size:17px}
+.ds-fahrzeug-feld{display:flex;flex-direction:column;gap:7px}
+.ds-fahrzeug-feld label{margin:0;color:#425166;font-size:11px}
+.ds-fahrzeug-feld input,.ds-fahrzeug-feld select{margin:0;min-height:52px;border:1px solid #e6e8ec;border-radius:12px;background:#f5f7fa;color:#192b43;font-size:14px}
+.ds-fahrzeug-feld input:focus,.ds-fahrzeug-feld select:focus{outline:2px solid #ff8838;outline-offset:2px}
+.ds-fahrzeug-hinweis{padding:12px 13px;border-radius:11px;background:#fff0e4;color:#75513b;font-size:11px}
+.ds-fahrzeug-speichern{min-height:54px;border-radius:13px;font-size:13px}
+@media(max-width:350px){.ds-merk-item,.ds-fahrzeug-form{padding:13px}.ds-fahrzeug-hero{padding:17px}}
+
+/* =========================================
+   DELIVERYSPOT – URBAN LIEFERZIEL PRÜFEN
+   ========================================= */
+.ds-lieferung-planen { display:flex; flex-direction:column; gap:16px; }
+.ds-lieferung-kopf { display:flex; flex-direction:column; gap:8px; }
+.ds-lieferung-eyebrow { color:#e77a2e; font-size:10px; font-weight:800; letter-spacing:1.2px; }
+.ds-lieferung-kopf h1 { margin:0; color:#192b43; font-size:26px; line-height:1.15; letter-spacing:-.8px; }
+.ds-lieferung-kopf p { margin:0; color:#64748b; font-size:12px; line-height:1.6; }
+.ds-lieferung-adresse { display:flex; flex-direction:column; gap:10px; }
+.ds-lieferung-label { color:#7b879c; font-size:10px; font-weight:800; letter-spacing:1.3px; }
+.ds-lieferung-adresskarte { display:flex; align-items:center; gap:14px; width:100%; padding:17px; border:1px solid #e6e8ec; border-radius:20px; background:#fff; box-shadow:0 5px 18px rgba(25,43,67,.05); text-align:left; }
+.ds-lieferung-adressicon { display:grid; place-items:center; width:52px; height:52px; flex-shrink:0; border-radius:15px; background:#fff0e4; color:#e77a2e; }
+.ds-lieferung-adressicon svg { width:24px; height:24px; }
+.ds-lieferung-adresstext { display:flex; min-width:0; flex:1; flex-direction:column; gap:5px; }
+.ds-lieferung-adresstext strong { color:#192b43; font-size:15px; line-height:1.35; overflow-wrap:anywhere; }
+.ds-lieferung-adresstext small { color:#64748b; font-size:11px; }
+.ds-lieferung-chevron { color:#64748b; font-size:28px; line-height:1; }
+.ds-lieferung-details { padding:18px; border:1px solid #e6e8ec; border-radius:20px; background:#fff; box-shadow:0 5px 18px rgba(25,43,67,.05); }
+.ds-lieferung-detailskopf { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.ds-lieferung-detailsicon { display:grid; place-items:center; width:44px; height:44px; flex-shrink:0; border-radius:14px; background:#f4f6f8; color:#5b667a; }
+.ds-lieferung-detailsicon svg { width:22px; height:22px; }
+.ds-lieferung-detailskopf h2 { margin:0; color:#192b43; font-size:17px; }
+.ds-lieferung-tabelle { display:flex; flex-direction:column; margin:0; }
+.ds-lieferung-tabelle > div { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 0; }
+.ds-lieferung-tabelle > div + div { border-top:1px solid #eef1f4; }
+.ds-lieferung-tabelle dt { color:#6c7890; font-size:12px; }
+.ds-lieferung-tabelle dd { margin:0; color:#192b43; font-size:12px; font-weight:700; text-align:right; overflow-wrap:anywhere; }
+.ds-lieferung-aktionen { display:flex; flex-direction:column; gap:10px; }
+.ds-lieferung-aktionen .button { min-height:54px; border-radius:14px; }
+.ds-lieferung-aktionen .button.primary { background:#ff8838; color:#111111; font-size:14px; font-weight:600; box-shadow:0 8px 18px rgba(255,136,56,.2); }
+.ds-lieferung-aktionen .button.secondary { background:#fff6ef; border:1px solid #f2e3d7; color:#192b43; font-size:13px; font-weight:700; }
+.ds-lieferung-aktionen .button.soft { background:#f5f7fa; border:1px solid #e6e8ec; color:#192b43; font-size:13px; font-weight:700; }
+@media (max-width:360px) { .ds-lieferung-kopf h1 { font-size:23px; } .ds-lieferung-adresskarte,.ds-lieferung-details { padding:15px; } .ds-lieferung-adresstext strong { font-size:14px; } }
+/* Bern oben rechts ausblenden */
+.stadt {
+  display: none !important;
+}
+
+/* Schwarzen iPhone-Balken entfernen */
+.home-indikator {
+  display: none !important;
+}
+/* Doppelte Routeninformation im Navigationsheader entfernen */
+.nav-anweisung #nav-route-info {
+  display: none !important;
+}
+
+/* DELIVERYSPOT – URBAN ABSCHLUSSSEITE */
+.ds-erfolg-seite{display:flex;flex-direction:column;gap:16px}
+.ds-erfolg-kopf{display:flex;flex-direction:column;gap:7px}
+.ds-erfolg-eyebrow{color:#e77a2e;font-size:10px;letter-spacing:1.2px;font-weight:800}
+.ds-erfolg-kopf h1{margin:0;color:#192b43;font-size:26px;line-height:1.2;letter-spacing:-.6px}
+.ds-erfolg-kopf p{color:#64748b;font-size:12px}
+.ds-erfolg-hero{display:flex;align-items:center;gap:16px;padding:24px 19px;border-radius:20px;background:linear-gradient(135deg,#192b43,#294767);box-shadow:0 9px 26px rgba(25,43,67,.13);color:white}
+.ds-erfolg-symbol{display:grid;place-items:center;flex-shrink:0;width:62px;height:62px;border-radius:19px;background:#18b879;color:#fff}
+.ds-erfolg-symbol svg{width:30px;height:30px;stroke-width:2.6}
+.ds-erfolg-hero-text{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ds-erfolg-hero-text>span{color:#ffb36e;font-size:9px;font-weight:800;letter-spacing:1px}
+.ds-erfolg-hero-text h2{margin:0;color:white;font-size:25px;line-height:1.15}
+.ds-erfolg-hero-text p{color:#d7e1ec;font-size:11px}
+.ds-erfolg-adresskarte{display:flex;flex-direction:column;gap:18px;padding:20px;border:1px solid #e6e8ec;border-radius:19px;background:white;box-shadow:0 5px 18px rgba(25,43,67,.05)}
+.ds-erfolg-adresskopf{display:flex;align-items:center;gap:12px}
+.ds-erfolg-standorticon{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;border-radius:13px;background:#fff0e4;color:#e77a2e}
+.ds-erfolg-standorticon svg{width:22px;height:22px}
+.ds-erfolg-adresskopf>div{display:flex;min-width:0;flex-direction:column;gap:6px}
+.ds-erfolg-adresskopf small{color:#7b879c;font-size:9px;font-weight:800;letter-spacing:.8px}
+.ds-erfolg-adresskopf strong{color:#192b43;font-size:14px;overflow-wrap:anywhere;line-height:1.5}
+.ds-erfolg-status{display:inline-flex;align-items:center;align-self:flex-start;gap:7px;padding:8px 11px;border-radius:9px;background:#e5f5ed;color:#167b51;font-size:11px;font-weight:700}
+.ds-erfolg-status svg{width:15px;height:15px}
+.ds-erfolg-aktionen{display:flex;flex-direction:column;gap:10px;margin-top:2px}
+.ds-erfolg-aktionen .button{min-height:54px;border-radius:13px;font-size:12px}
+.ds-erfolg-aktionen .button.primary{background:#ff8838;color:#111;font-weight:400}
+.ds-erfolg-aktionen .button.secondary{background:#fff0e4;border:1px solid #f2e3d7;color:#192b43}
+@media(max-width:350px){.ds-erfolg-hero{padding:18px 15px}.ds-erfolg-symbol{width:52px;height:52px}.ds-erfolg-adresskarte{padding:16px}}
+/* Einheitliche Schrift für alle Aktionsbuttons */
+button.button,
+a.button {
+  color: #111111 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+/* DELIVERYSPOT – URBAN INFO / GUT ZU WISSEN */
+.ds-info-page { display:flex; flex-direction:column; gap:19px; }
+.ds-info-hero { display:flex; flex-direction:column; gap:10px; padding:22px 20px 18px; border-radius:20px; color:#fff; background:linear-gradient(135deg,#192b43,#294767); box-shadow:0 8px 24px rgba(25,43,67,.12); }
+.ds-info-eyebrow { color:#ffb36e; font-size:10px; font-weight:800; letter-spacing:1.25px; }
+.ds-info-hero h1 { color:#fff; margin:0; font-size:26px; line-height:1.2; }
+.ds-info-hero>p { color:#e1e9f2; font-size:12px; line-height:1.6; }
+.ds-info-hero-bottom { display:flex; align-items:center; gap:9px; padding-top:12px; margin-top:2px; border-top:1px solid rgba(255,255,255,.2); color:#e1e9f2; font-size:11px; }
+.ds-info-hero-bottom svg { width:17px; height:17px; color:#ff8838; }
+.ds-info-section { display:flex; flex-direction:column; gap:11px; }
+.ds-info-section-title { font-size:16px; color:#192b43; margin:0 0 2px; }
+.ds-info-steps,.ds-info-faq-list { display:flex; flex-direction:column; gap:10px; }
+.ds-info-step { display:flex; align-items:flex-start; gap:13px; background:#fff; border:1px solid #e6e8ec; border-radius:16px; padding:17px 15px; box-shadow:0 3px 13px rgba(25,43,67,.035); }
+.ds-info-step-number { display:grid; place-items:center; flex-shrink:0; width:38px; height:38px; border-radius:12px; background:#fff0e4; color:#e77a2e; font-size:14px; font-weight:800; }
+.ds-info-step h3,.ds-info-faq h3 { color:#192b43; margin:0 0 5px; font-size:13px; line-height:1.45; }
+.ds-info-step p,.ds-info-faq p { color:#64748b; font-size:11px; line-height:1.6; }
+.ds-info-faq { padding:17px; border:1px solid #e6e8ec; border-radius:16px; background:#fff; }
+.ds-info-faq h3 { margin-bottom:7px; }
+.ds-info-actions { display:flex; flex-direction:column; gap:10px; margin-top:1px; }
+.ds-info-actions .button.primary { min-height:48px; background:#ff8838; color:#111111; font-size:12px; font-weight:600; border-radius:11px; box-shadow:none; }
+@media(max-width:350px){ .ds-info-hero{padding:19px 16px;} .ds-info-step{padding:14px 12px;} }
+
+
+/* DELIVERYSPOT – URBAN ROUTENPLANUNG / WEG ZUR PARKFLÄCHE */
+.ds-weg-page{display:flex;flex-direction:column;gap:16px}
+.ds-weg-heading{display:flex;flex-direction:column;gap:7px}
+.ds-weg-eyebrow{color:#e77a2e;font-size:10px;font-weight:800;letter-spacing:1.1px}
+.ds-weg-heading h1{margin:0;color:#192b43;font-size:25px;line-height:1.18}
+.ds-weg-heading p{font-size:12px;color:#64748b}
+.ds-weg-hero{padding:20px;border-radius:19px;background:linear-gradient(135deg,#192b43,#294767);color:#fff;box-shadow:0 8px 24px rgba(25,43,67,.12)}
+.ds-weg-hero-top{display:flex;align-items:center;gap:13px}
+.ds-weg-symbol{display:grid;place-items:center;width:48px;height:48px;border-radius:13px;background:#ff8838;color:#192b43;flex-shrink:0}
+.ds-weg-symbol svg{width:23px;height:23px}
+.ds-weg-hero-name{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ds-weg-hero-name small{color:#ffb36e;font-size:9px;font-weight:800;letter-spacing:.7px}
+.ds-weg-hero-name strong{font-size:14px;line-height:1.45;color:#fff;overflow-wrap:anywhere}
+.ds-weg-distance{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
+.ds-weg-distance span{font-size:11px;color:#d7e1ec}
+.ds-weg-distance strong{font-size:21px;white-space:nowrap}
+.ds-weg-hero>p{margin-top:6px;font-size:10px;color:#d7e1ec}
+.ds-weg-mapcard{display:flex;flex-direction:column;gap:11px;padding:15px;background:#fff;border:1px solid #e6e8ec;border-radius:18px}
+.ds-weg-mapcard h2,.ds-weg-facts h2{margin:0;font-size:15px;color:#192b43}
+.ds-weg-mapcard .karte{height:250px;border-radius:13px}
+.ds-weg-mapcard>p{font-size:10px;color:#64748b;line-height:1.5}
+.ds-weg-facts{display:flex;flex-direction:column;gap:13px;padding:18px;background:#fff;border:1px solid #e6e8ec;border-radius:18px}
+.ds-weg-facts>div{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:11px}
+.ds-weg-facts>div+div{padding-top:12px;border-top:1px solid #eef1f4}
+.ds-weg-facts span{color:#64748b}
+.ds-weg-facts strong{text-align:right;color:#192b43}
+.ds-weg-actions{display:flex;flex-direction:column;gap:8px;margin-top:0;padding-top:0}
+.ds-weg-actions .button{min-height:46px;border-radius:10px}
+.ds-weg-actions .button.primary{background:#ff8838}
+.ds-weg-actions .button.secondary{background:#fff0e4}
+.ds-weg-actions .button.soft{background:#ffb36e}
+@media(max-width:350px){.ds-weg-hero{padding:16px}.ds-weg-mapcard{padding:12px}.ds-weg-distance strong{font-size:19px}}
+
+
+
+/* EINZIGE HEADER-SPRACHWAHL: kompakt neben DeliverySpot */
+.app .kopf:has(.ds-header-language) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.app .kopf:has(.ds-header-language) > strong {
+  margin: 0 auto 0 0;
+  white-space: nowrap;
+}
+.app .kopf .ds-header-language {
+  display: block;
+  position: static;
+  align-self: center;
+  flex: 0 0 56px;
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  margin: 0;
+  padding: 0;
+}
+.app .kopf .ds-header-language::before { content: none; display: none; }
+.app .kopf .ds-header-language label { display: none !important; }
+.app .kopf .ds-header-language #app-sprache {
+  display: block;
+  box-sizing: border-box;
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  height: 35px;
+  min-height: 35px;
+  padding: 5px 3px 5px 6px;
+  margin: 0;
+  border: 1px solid #f2e3d7;
+  border-radius: 9px;
+  background: #fff0e4;
+  color: #111;
+  font-size: 11px;
+  font-weight: 600;
+}
+/* Fahrzeug ansehen – helloranger Hintergrund */
+.ds-lieferung-aktionen .button.soft {
+  background: #fff0e4 !important;
+  border: 1px solid #f2e3d7;
+  color: #111111;
+  font-size: 12px;
+  font-weight: 600;
+}
+/* Stopp verwerfen – hellorange */
+.ds-weg-actions .button.soft {
+  background: #fff0e4 !important;
+  border: 1px solid #f2e3d7 !important;
+  color: #111111 !important;
+  font-size: 12px;
+  font-weight: 600;
 }

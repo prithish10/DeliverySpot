@@ -75,14 +75,9 @@ let adressFavoriten = Array.isArray(alteFavoriten)
     ))]
   : []
 let merkliste = Array.isArray(alteMerkliste)
-  ? alteMerkliste.filter((eintrag) =>
-      eintrag &&
-      typeof eintrag.adresse === 'string' &&
-      Array.isArray(eintrag.position) &&
-      eintrag.position.length === 2 &&
-      eintrag.position.every(Number.isFinite) &&
-      ['A', 'B', 'C'].includes(eintrag.zone)
-    )
+  ? alteMerkliste.filter(e => e && typeof e.adresse === 'string' &&
+      Array.isArray(e.position) && e.position.length === 2 &&
+      e.position.every(Number.isFinite))
   : []
 const zustand = {
   seite: 1,
@@ -92,7 +87,7 @@ const zustand = {
   parkdauer: 0,
   entwurfRadius: 500,
   entwurfParkdauer: 0,
-  zone: 'A',
+  zone: null,
   laedt: false,
   fehler: '',
   treffer: [],
@@ -119,11 +114,17 @@ let suchVersion = 0
 // Die tatsächliche Parkberechtigung und zulässige Dauer müssen vor Ort geprüft werden.
 let standorte = []
 let zonen = []
-const detailSeiten = { A: 8, B: 11 }
-const wegSeiten = { A: 9, B: 12 }
-const ankunftSeiten = { A: 10, B: 13 }
+// Dynamische Detail-, Weg- und Ankunftsseiten für alle Standort-IDs.
+const detailSeiten = new Proxy({}, { get: (_, id) => id ? 8 : undefined })
+const wegSeiten = new Proxy({}, { get: (_, id) => id ? 9 : undefined })
+const ankunftSeiten = new Proxy({}, { get: (_, id) => id ? 10 : undefined })
 function aktuelleZone() {
-  return zonen.find(zone => zone.id === zustand.zone) || zonen[0]
+  return zonen.find(zone => zone.id === zustand.zone) || null
+}
+function alternativeZone() {
+  const kandidaten = passendeZonen()
+  const index = kandidaten.findIndex(z => z.id === zustand.zone)
+  return kandidaten.length > 1 ? kandidaten[(index + 1) % kandidaten.length] : null
 }
 function abstandMeter(a, b) {
   const rad = Math.PI / 180
@@ -134,40 +135,36 @@ function abstandMeter(a, b) {
 }
 
 function zonenAktualisieren() {
-  if (!zustand.position) {
-    zonen = []
-    return
-  }
-
-  const alleStandorte = standorte
-    .map(ort => ({
-      ...ort,
-      meter: Math.round(
-        abstandMeter(zustand.position, [ort.lat, ort.lon])
-      ),
-      minuten: 20,
-      zeit: 'Beschilderung vor Ort prüfen',
-      gesperrt: false
-    }))
-    .filter(ort => ort.meter <= 1500)
-    .sort((a, b) => a.meter - b.meter)
-
-  const imRadius = alleStandorte.filter(
-    ort => ort.meter <= zustand.radius
-  )
-
-  const auswahl = imRadius.length > 0
-    ? imRadius
-    : alleStandorte
-
-  zonen = auswahl.slice(0, 2).map((ort, i) => ({
+  if (!zustand.position) { zonen = []; return }
+  // Jede originale Geoportal-ID bleibt über verschiedene Adresssuchen erhalten.
+  zonen = standorte.map(ort => ({
     ...ort,
-    id: i === 0 ? 'A' : 'B',
+    id: String(ort.id),
+    meter: Math.round(abstandMeter(zustand.position, [ort.lat, ort.lon])),
+    minuten: 60,
+    zeit: 'Beschilderung vor Ort prüfen',
+    gesperrt: false,
     name: `${ort.typ} · ${ort.name}`
-  }))
+  })).sort((a,b) => a.meter - b.meter)
+  zonen.forEach((ort, index) => { ort.nummer = index + 1 })
 }
-
-
+function alteMerklisteMigrieren() {
+  let veraendert = false
+  merkliste = merkliste.map(e => {
+    if (e.standortId) return e
+    // Ältere A/B-Einträge waren die zwei nächsten Standorte zur gespeicherten Adresse.
+    if (!['A', 'B'].includes(e.zone)) return e
+    const nummer = e.zone === 'A' ? 0 : 1
+    const kandidaten = standorte.map(ort => ({
+      ort, meter: abstandMeter(e.position, [ort.lat, ort.lon])
+    })).sort((a,b) => a.meter - b.meter)
+    if (!kandidaten[nummer]) return e
+    veraendert = true
+    return { ...e, standortId: String(kandidaten[nummer].ort.id),
+      standortName: kandidaten[nummer].ort.name }
+  })
+  if (veraendert) speichern('ds-merkliste', merkliste)
+}
 function passendeZonen(
   radius = zustand.radius,
   parkdauer = zustand.parkdauer
@@ -184,6 +181,7 @@ async function standorteLaden() {
     if (!Array.isArray(daten)) throw new Error('Ungültiges Datenformat')
     standorte = daten.filter(d => Number.isFinite(d.lat) && Number.isFinite(d.lon))
     zonenAktualisieren()
+    alteMerklisteMigrieren()
     rendern()
   } catch (fehler) {
     console.error('Standorte konnten nicht geladen werden:', fehler)
@@ -349,6 +347,36 @@ function navAnsichtAktualisieren() {
     if (p && karte && navigationLive.folgen) karte.panTo(p, { animate: false })
 }
   const route = navigationLive.route
+  // Fahrinformationen aktualisieren
+const reststrecke = document.querySelector('#nav-reststrecke')
+const restzeit = document.querySelector('#nav-restzeit')
+const ankunft = document.querySelector('#nav-ankunftszeit')
+
+if (route) {
+  const minuten = Math.max(1, Math.round(route.duration / 60))
+
+  if (reststrecke) {
+    reststrecke.textContent = navDistanz(route.distance)
+  }
+
+  if (restzeit) {
+    restzeit.textContent = `${minuten} Min.`
+  }
+
+  if (ankunft) {
+    const ankunftsdatum = new Date(
+      Date.now() + route.duration * 1000
+    )
+
+    ankunft.textContent = ankunftsdatum.toLocaleTimeString(
+      'de-CH',
+      {
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    )
+  }
+}
   const info = document.querySelector('#nav-route-info')
   const hinweis = document.querySelector('#nav-hinweis')
   const naechste = navNaechsterSchritt()
@@ -444,6 +472,33 @@ function navSeite() {
 
 <p id="nav-meldung" class="klein" role="status">${sicher(navigationLive.meldung)}</p>
 
+<div class="nav-fahrtkarte">
+  <div class="nav-fahrtkopf">
+    <strong>Deine Fahrt</strong>
+    <span class="nav-live-badge">Route aktiv</span>
+  </div>
+
+  <div class="nav-fahrtwerte">
+    <div>
+      <span class="nav-wert-symbol">↗</span>
+      <strong id="nav-reststrecke">–</strong>
+      <small>Reststrecke</small>
+    </div>
+
+    <div>
+      <span class="nav-wert-symbol">◷</span>
+      <strong id="nav-restzeit">–</strong>
+      <small>Fahrzeit</small>
+    </div>
+
+    <div>
+      <span class="nav-wert-symbol">⚑</span>
+      <strong id="nav-ankunftszeit">–</strong>
+      <small>Ankunft</small>
+    </div>
+  </div>
+</div>
+
 <div class="nav-kartenaktionen">
   ${knopf('Meinem Standort folgen', 'nav-follow', 'secondary')}
   ${knopf('Gesamte Route anzeigen', 'nav-overview', 'secondary')}
@@ -474,10 +529,22 @@ function navSeite() {
 // ==================================================
 
 const timerGespeichert = lesen('ds-parking-timer', {}) || {}
+// Einmalige Umstellung alter, nicht laufender 20-Minuten-Defaults auf 60 Minuten.
+// Bereits laufende Timer und später bewusst gewählte Erinnerungsdauern bleiben erhalten.
+const timer60Migriert = lesen('ds-timer-default-60-migriert', false)
+if (!timer60Migriert) {
+  if (!timerGespeichert.aktiv && (timerGespeichert.dauer === 20 * 60 || !Number.isFinite(timerGespeichert.dauer))) {
+    timerGespeichert.dauer = 60 * 60
+    timerGespeichert.rest = 60 * 60
+    timerGespeichert.ende = null
+  }
+  speichern('ds-parking-timer', timerGespeichert)
+  speichern('ds-timer-default-60-migriert', true)
+}
 let parkingTimer = {
-  zone: ['A', 'B'].includes(timerGespeichert.zone) ? timerGespeichert.zone : 'A',
-  dauer: Number.isFinite(timerGespeichert.dauer) ? timerGespeichert.dauer : 20 * 60,
-  rest: Number.isFinite(timerGespeichert.rest) ? timerGespeichert.rest : 20 * 60,
+  zone: typeof timerGespeichert.zone === 'string' ? timerGespeichert.zone : null,
+  dauer: Number.isFinite(timerGespeichert.dauer) ? timerGespeichert.dauer : 60 * 60,
+  rest: Number.isFinite(timerGespeichert.rest) ? timerGespeichert.rest : 60 * 60,
   ende: Number.isFinite(timerGespeichert.ende) ? timerGespeichert.ende : null,
   aktiv: Boolean(timerGespeichert.aktiv),
   gewarnt: Boolean(timerGespeichert.gewarnt)
@@ -494,12 +561,12 @@ function timerSpeichern() {
 }
 
 function timerZuruecksetzen(zoneId = zustand.zone) {
-  const zone = zonen.find(z => z.id === zoneId) || zonen[0] || { id: zoneId, minuten: 20 }
+  const zone = zonen.find(z => z.id === zoneId) || { id: zoneId, minuten: 60 }
 
   parkingTimer = {
     zone: zone.id,
-    dauer: zone.minuten * 60,
-    rest: zone.minuten * 60,
+    dauer: 60 * 60,
+    rest: 60 * 60,
     ende: null,
     aktiv: false,
     gewarnt: false
@@ -685,7 +752,7 @@ function lieferdaten(radius = zustand.radius) {
       <h2>Deine Lieferung</h2>
       <dl class="daten">
         <div>
-          <dt>Fahrzeug</dt>
+          <dt>Fahrzeugtyp</dt>
           <dd>${sicher(zustand.fahrzeug.typ)}</dd>
         </div>
         <div>
@@ -712,15 +779,11 @@ function zonenKarte(zone) {
   return `
     <button type="button" class="zonenkarte"
       data-action="zone:${zone.id}">
-      <span class="zonenbuchstabe">${zone.id}</span>
+      <span class="zonenbuchstabe">${sicher(zone.nummer)}</span>
       <span class="zonentext">
         <strong>${sicher(zone.name)}</strong>
         <span>${zone.meter} m Luftlinie zum Lieferziel</span>
-        <span>
-          ${zone.gesperrt
-            ? 'Aktuell gesperrt'
-            : `Kostenlos · Parkdauer vor Ort prüfen`}
-        </span>
+        <span>Parkdauer und Bedingungen vor Ort prüfen</span>
         <small>
           ${zone.gesperrt
             ? 'Sperrung · Details →'
@@ -808,9 +871,7 @@ function geheZu(seite, merken = true) {
   }
   zustand.seite = seite
   zustand.fehler = ''
-  if ([8, 9, 10].includes(seite)) zustand.zone = 'A'
-  if ([11, 12, 13].includes(seite)) zustand.zone = 'B'
-  if (seite === 14) zustand.zone = 'C'
+  // Die Standortauswahl darf beim Seitenwechsel nicht überschrieben werden.
   rendern()
   window.scrollTo({ top: 0 })
   document.querySelector('h1')?.focus({
@@ -821,7 +882,7 @@ function ergebnisseOeffnen() {
   geheZu(zustand.radius === 150 ? 7 : 3)
 }
 function zoneOeffnen(id) {
-  if (!detailSeiten[id] || !zonen.some(zone => zone.id === id)) return
+  if (!zonen.some(zone => zone.id === id)) return
   zustand.zone = id
   geheZu(detailSeiten[id])
 }
@@ -918,16 +979,25 @@ function seitenInhalt() {
   // 01 – STARTSEITE
   if (seite === 1) {
     return `
-      <section class="urban-intro" aria-label="Willkommen bei DeliverySpot">
-        <span class="urban-kicker">DEIN LIEFERASSISTENT</span>
-        <h1>Dein nächster Stopp.<span> Einfacher.</span></h1>
-        <p>Lieferadresse eingeben, passende Parkfläche finden und direkt losfahren.</p>
-      </section>
+      <section class="start-hero">
+  <span class="start-eyebrow">
+    INTELLIGENTE LIEFERUNG · BERN
+  </span>
+
+  <h1>Dein nächster Stopp.</h1>
+
+  <p>
+    Finde eine passende Parkmöglichkeit für deine
+    Lieferung und navigiere direkt dorthin.
+  </p>
+
+  <div class="start-standort">
+    ${icon('pin')}
+    <span>Für Lieferungen in der Stadt Bern</span>
+  </div>
+</section>
       <form id="adressformular" class="card adressformular start-suche">
-        <div class="urban-suchkopf">
-          <span class="urban-suchicon" aria-hidden="true">${icon('pin')}</span>
-          <div><h2>Wohin geht deine Lieferung?</h2><p>Adresse in Bern eingeben</p></div>
-        </div>
+        <h2>Wo möchtest du liefern?</h2>
         <label class="sr-only" for="adresse">
           Lieferadresse in der Stadt Bern
         </label>
@@ -937,8 +1007,9 @@ function seitenInhalt() {
           maxlength="160" required
           autocomplete="street-address"
           ${zustand.laedt ? 'readonly' : ''}>
-        <p class="klein urban-fahrzeugstatus">${icon('fahrzeug')}
-          ${sicher(zustand.fahrzeug.typ)} · ${sicher(zustand.fahrzeug.gewicht)}
+        <p class="klein">
+          ${sicher(zustand.fahrzeug.typ)} ·
+          ${sicher(zustand.fahrzeug.gewicht)}
         </p>
         <button class="button primary" type="submit"
           ${zustand.laedt ? 'disabled' : ''}>
@@ -967,42 +1038,54 @@ function seitenInhalt() {
           ).join('')}
         </section>
       ` : ''}
-      <section class="urban-map-card" aria-label="Interaktive Karte von Bern">
-        <div class="urban-map-heading">
-          <div><span class="urban-kicker">KARTENÜBERSICHT</span><h2>Deine Umgebung</h2></div>
-          <span class="urban-city">${icon('pin')} Bern</span>
-        </div>
-        ${kartenHTML()}
-        <p class="urban-map-caption">Kartenausschnitt zur Orientierung · Nach der Suche erscheinen die erfassten Parkflächen.</p>
-      </section>
-      ${adressFavoriten.length ? adressFavoritenHTML() : ''}
+      ${kartenHTML()}
+      ${adressFavoritenHTML()}
     `
   }
-  // 02 – LIEFERADRESSE
+  // 02 – LIEFERADRESSE (Urban Redesign)
   if (seite === 2) {
     const gemerkt = adressFavoriten.includes(zustand.adresse)
     return `
-      ${titel('Wohin geht die Lieferung?', 'Prüfe dein Lieferziel.')}
-      <p class="eyebrow">DEINE ADRESSE</p>
-      <button class="card adressauswahl" data-action="bearbeiten">
-        ${icon('pin')}
-        <span>
-          <strong>${sicher(zustand.adresse)}</strong>
-          <small>Lieferadresse ändern</small>
-        </span>
-        <span aria-hidden="true">›</span>
-      </button>
-      ${lieferdaten()}
-      <div class="aktionen unten">
-        ${knopf('Ladezonen anzeigen', 'ergebnisse')}
-        ${knopf(
-          gemerkt ? '♥ Adresse gespeichert' : '♡ Adresse als Favorit speichern',
-          'adresse-merken',
-          'secondary'
-        )}
-        ${googleMapsLink()}
-        ${knopf('Fahrzeug ansehen', 'seite:19', 'secondary')}
-      </div>
+      <section class="ds-lieferung-planen">
+        <header class="ds-lieferung-kopf">
+          <span class="ds-lieferung-eyebrow">LIEFERUNG PLANEN · BERN</span>
+          <h1>Wohin geht die Lieferung?</h1>
+          <p>Prüfe dein Lieferziel und starte danach die Parkplatzsuche.</p>
+        </header>
+        <section class="ds-lieferung-adresse">
+          <span class="ds-lieferung-label">DEINE ADRESSE</span>
+          <button type="button" class="ds-lieferung-adresskarte" data-action="bearbeiten">
+            <span class="ds-lieferung-adressicon">${icon('pin')}</span>
+            <span class="ds-lieferung-adresstext">
+              <strong>${sicher(zustand.adresse)}</strong>
+              <small>Lieferadresse ändern</small>
+            </span>
+            <span class="ds-lieferung-chevron" aria-hidden="true">›</span>
+          </button>
+        </section>
+        <section class="ds-lieferung-details">
+          <div class="ds-lieferung-detailskopf">
+            <span class="ds-lieferung-detailsicon">${icon('fahrzeug')}</span>
+            <h2>Deine Lieferung</h2>
+          </div>
+          <dl class="ds-lieferung-tabelle">
+            <div><dt>Fahrzeugtyp</dt><dd>${sicher(zustand.fahrzeug.typ)}</dd></div>
+            <div><dt>Gesamtgewicht</dt><dd>${sicher(zustand.fahrzeug.gewicht)}</dd></div>
+            <div><dt>Zeitpunkt</dt><dd>${sicher(zeitpunkt())}</dd></div>
+            <div><dt>Suchradius</dt><dd>${zustand.radius} m</dd></div>
+            <div><dt>Entfernung</dt><dd>Luftlinie zum Ziel</dd></div>
+          </dl>
+        </section>
+        <div class="ds-lieferung-aktionen">
+          ${knopf('Ladezonen anzeigen →', 'ergebnisse')}
+          ${knopf(
+            gemerkt ? '♥ Adresse gespeichert' : '♡ Adresse als Favorit speichern',
+            'adresse-merken', 'secondary'
+          )}
+          ${googleMapsLink()}
+          ${knopf('Fahrzeug ansehen', 'seite:19', 'soft')}
+        </div>
+      </section>
     `
   }
   // 03 – KARTE
@@ -1021,7 +1104,6 @@ function seitenInhalt() {
         `${zustand.adresse} · Suchradius ${zustand.radius} m`
       )}
       ${tabs(seite === 4 ? 'liste' : 'karte')}
-      ${parkdauerAuswahl()}
       ${seite !== 4 ? kartenHTML(true) : ''}
       <h2>
         ${liste.length} ${liste.length === 1 ? 'Zone' : 'Zonen'}
@@ -1044,11 +1126,7 @@ function seitenInhalt() {
           : hinweis(
               'Offizielle Standortkoordinaten, keine bestätigten Ladezonen. Nutzung und Beschilderung vor Ort prüfen.'
             )}
-      ${zustand.radius === 150
-        ? knopf('Radius auf 500 m erweitern', 'erweitern')
-        : seite === 3
-          ? knopf('Alle Zonen als Liste ansehen', 'liste', 'secondary')
-          : ''}
+      ${zustand.radius === 150 ? knopf('Radius auf 500 m erweitern', 'erweitern') : ''}
       ${liste.length === 0
         ? knopf('Alle Filter zurücksetzen', 'alle-filter-reset', 'secondary')
         : ''}
@@ -1090,134 +1168,137 @@ function seitenInhalt() {
       </div>
     `
   }
-  // 08 – DETAILS ZONE A
-  // 11 – DETAILS ZONE B
+  // 08 / 11 – PARKFLAECHENDETAILS IM URBAN-DESIGN
   if ([8, 11].includes(seite)) {
+    if (!zone) return `${titel('Parkfläche nicht gefunden', 'Bitte starte eine neue Suche.')}`
     return `
-      ${titel(zone.name, `${zone.meter} m Luftlinie zum Lieferziel`)}
-      ${kartenHTML()}
-      <span class="badge">Belegung unbekannt</span>
-      <div class="card">
-        <dl class="daten">
-          <div>
-            <dt>Lieferzeit</dt>
-            <dd>${sicher(zone.zeit)}</dd>
-          </div>
-          <div>
-            <dt>Max. Parkdauer</dt>
-            <dd>Beschilderung vor Ort prüfen</dd>
-          </div>
-          <div>
-            <dt>Preis</dt>
-            <dd>Kostenlos bis zu 60 min</dd>
-          </div>
-          <div>
-            <dt>Gesamtgewicht</dt>
-            <dd>bis 3,5 t</dd>
-          </div>
-          <div>
-            <dt>Nutzung</dt>
-            <dd>${sicher(zone.typ)} – Nutzbarkeit prüfen</dd>
-          </div>
+      <section class="ds-detail-header">
+        <span class="ds-detail-eyebrow">STANDORTDETAILS · BERN</span>
+        <h1>${sicher(zone.name)}</h1>
+        <p>Erfasste Parkfläche in der Nähe deines Lieferziels.</p>
+      </section>
+      <section class="ds-detail-summary" aria-label="Entfernung zum Lieferziel">
+        <div class="ds-detail-zoneid">${sicher(zone.nummer)}</div>
+        <div class="ds-detail-summarytext">
+          <span>ENTFERNUNG ZUM LIEFERZIEL</span>
+          <strong>${sicher(zone.meter)} m <small>Luftlinie</small></strong>
+          <p>${sicher(zustand.adresse)}</p>
+        </div>
+      </section>
+      <section class="ds-detail-mapcard">
+        <div class="ds-detail-sectiontop">
+          <h2>Standort auf der Karte</h2>
+          <span>Bern</span>
+        </div>
+        ${kartenHTML()}
+      </section>
+      <section class="ds-detail-infocard">
+        <h2>Informationen zur Parkfläche</h2>
+        <dl class="ds-detail-facts">
+          <div><dt>Belegung</dt><dd>Unbekannt</dd></div>
+          <div><dt>Erlaubte Parkdauer</dt><dd>Beschilderung vor Ort prüfen</dd></div>
+          <div><dt>Parkgebühren</dt><dd>Kostenlos bis 60 min</dd></div>
+          <div><dt>Gesamtgewicht</dt><dd>Bis 3,5 t</dd></div>
         </dl>
-      </div>
+      </section>
       ${zustand.fahrzeug.gewicht === 'Über 3,5 t'
-        ? hinweis(
-            'Dein Fahrzeugprofil liegt über dem für diese Zone angegebenen Gewicht.',
-            true
-          )
+        ? hinweis('Dein Fahrzeugprofil liegt über der hier angegebenen Gewichtsgrenze.', true)
         : ''}
-      <p class="klein">
-        Beschilderung vor Ort beachten.
-        Die Auswahl reserviert keinen Platz.
-      </p>
-      <div class="aktionen unten">
-        ${knopf('Diese Zone wählen · Weg ansehen', 'weg')}
-        ${knopf(
-          istGemerkt(zone.id)
-            ? '♥ Aus Merkliste entfernen'
-            : '♡ In Merkliste speichern',
-          'merken',
-          'secondary'
-        )}
-        ${zonen.length > 1 ? knopf(
-          `Zone ${zone.id === 'A' ? 'B' : 'A'} vergleichen`,
-          `zone:${zone.id === 'A' ? 'B' : 'A'}`,
-          'secondary'
-        ) : ''}
+      <div class="ds-detail-sicherheit">
+        ${icon('info')}
+        <p>Beschilderung und örtliche Bedingungen vor dem Parkieren prüfen. Diese Auswahl reserviert keinen Platz.</p>
+      </div>
+      <div class="ds-detail-actions">
+        ${knopf('Weg zur Parkfläche ansehen →', 'weg')}
+        ${knopf(istGemerkt(zone.id) ? '♥ Aus Merkliste entfernen' : '♡ In Merkliste speichern', 'merken', 'secondary')}
+        ${alternativeZone() ? knopf(`Alternative: ${alternativeZone().name}`, `zone:${alternativeZone().id}`, 'secondary') : ''}
       </div>
     `
   }
-  // 09 – WEG ZU ZONE A
-  // 12 – WEG ZU ZONE B
+  // 09 – WEG ZUR PARKFLÄCHE (alle Standorte)
   if ([9, 12].includes(seite)) {
     return `
-      ${titel(
-        'Dein Weg zur Ladezone',
-        `${zone.name} · ${zustand.adresse}`
-      )}
-      ${kartenHTML(true)}
-      <div class="card">
-        <h2>${sicher(zone.name)}</h2>
-        <p>${zone.meter} m Luftlinie zum Lieferziel</p>
-        <p>Parkdauer vor Ort prüfen · Kostenlos</p>
-        <p class="klein">
-          Die gestrichelte Linie dient zur Orientierung
-          und ist keine berechnete Strassenroute.
-        </p>
-      </div>
-      <div class="aktionen unten">
-        ${knopf('Zum Parkplatz navigieren →', 'nav-start')}
-        ${googleMapsLink()}
-        ${knopf('Ich bin angekommen', 'angekommen')}
-        ${zonen.length > 1 ? knopf(
-          `Alternative: Zone ${zone.id === 'A' ? 'B' : 'A'} prüfen`,
-          `zone:${zone.id === 'A' ? 'B' : 'A'}`,
-          'secondary'
-        ) : ''}
-        ${knopf('Stopp verwerfen', 'verwerfen', 'soft')}
-      </div>
+      <section class="ds-weg-page">
+        <header class="ds-weg-heading">
+          <span class="ds-weg-eyebrow">ROUTENPLANUNG · BERN</span>
+          <h1>Dein Weg zur Parkfläche</h1>
+          <p>Prüfe den Standort und starte danach die Navigation.</p>
+        </header>
+        <section class="ds-weg-hero">
+          <div class="ds-weg-hero-top">
+            <span class="ds-weg-symbol">${icon('pin')}</span>
+            <div class="ds-weg-hero-name">
+              <small>AUSGEWÄHLTE PARKFLÄCHE</small>
+              <strong>${sicher(zone.name)}</strong>
+            </div>
+          </div>
+          <div class="ds-weg-distance">
+            <span>Entfernung zum Lieferziel</span>
+            <strong>${zone.meter} m</strong>
+          </div>
+          <p>Luftlinie · Keine berechnete Fahrstrecke</p>
+        </section>
+        <section class="ds-weg-mapcard">
+          <h2>Standort auf der Karte</h2>
+          ${kartenHTML(true)}
+          <p>Die gestrichelte Linie dient zur Orientierung und zeigt keine berechnete Strassenroute.</p>
+        </section>
+        <section class="ds-weg-facts">
+          <h2>Parkinformationen</h2>
+          <div><span>Parkgebühren</span><strong>Kostenlos bis 60 min</strong></div>
+          <div><span>Erlaubte Parkdauer</span><strong>Vor Ort prüfen</strong></div>
+        </section>
+        <div class="ds-weg-actions">
+          ${knopf('Zum Parkplatz navigieren →', 'nav-start')}
+          ${googleMapsLink()}
+          ${knopf('Ich bin angekommen', 'angekommen')}
+          ${alternativeZone() ? knopf(`Alternative: ${alternativeZone().name}`, `zone:${alternativeZone().id}`, 'secondary') : ''}
+          ${knopf('Stopp verwerfen', 'verwerfen', 'soft')}
+        </div>
+      </section>
     `
   }
   // 10 – ANKUNFT ZONE A
   // 13 – ANKUNFT ZONE B
   if ([10, 13].includes(seite)) {
     return `
-      ${titel('An der Ladezone', `${zone.name} · dein Lieferstopp`)}
-      <div class="card">
-        <h2 class="titel-mit-icon">
-          ${icon('fahrzeug')}
-          Vor dem Entladen prüfen
-        </h2>
-        <ul class="pruefliste">
-          <li>Ist die Fläche tatsächlich nutzbar?</li>
-          <li>Passt die Beschilderung zum Fahrzeug?</li>
-          <li>Bleiben Zufahrten und Wege frei?</li>
-        </ul>
-      </div>
-      <div class="zeitkarte">
-        ${icon('uhr')}
-        <div>
-          <h2>Parkdauer vor Ort prüfen</h2>
-          <p>Standortdaten der Stadt Bern · keine Belegungsdaten</p>
-        </div>
-      </div>
-      ${timerKarte()}
+      <section class="ds-ankunft">
+        <header class="ds-ankunft-kopf">
+          <span class="ds-ankunft-eyebrow">LIEFERSTOPP · BERN</span>
+          <h1>Du bist angekommen.</h1>
+          <p>Prüfe den Standort und starte bei Bedarf deine Parkerinnerung.</p>
+        </header>
 
-      <div class="aktionen unten">
-        ${knopf('Lieferung abgeschlossen', 'abschliessen')}
-        ${knopf('Problem melden', 'seite:15', 'secondary')}
-        ${knopf(
-  `Andere Zone: ${zone.id === 'A' ? 'B' : 'A'} prüfen`,
-  `zone:${zone.id === 'A' ? 'B' : 'A'}`,
-  'secondary'
-)}
-        ${knopf('Stopp verwerfen', 'verwerfen', 'soft')}
-      </div>
+        <section class="ds-ankunft-hero">
+          <div class="ds-ankunft-icon">${icon('pin')}</div>
+          <div class="ds-ankunft-hero-text">
+            <small>DEIN LIEFERSTOPP</small>
+            <strong>${sicher(zone.name)}</strong>
+            <span>Parkfläche ${sicher(zone.id)}</span>
+          </div>
+        </section>
+
+        <section class="ds-ankunft-checkliste">
+          <h2>Vor dem Entladen prüfen</h2>
+          <div class="ds-ankunft-check">${icon('check')}<span>Ist die Parkfläche tatsächlich nutzbar?</span></div>
+          <div class="ds-ankunft-check">${icon('check')}<span>Passt die Beschilderung zum Fahrzeug?</span></div>
+          <div class="ds-ankunft-check">${icon('check')}<span>Bleiben Zufahrten und Wege frei?</span></div>
+        </section>
+
+        <section class="ds-ankunft-timer">${timerKarte()}</section>
+
+        <div class="ds-ankunft-aktionen">
+          ${knopf('Lieferung abschliessen ✓', 'abschliessen')}
+          ${knopf('Problem melden', 'seite:15', 'secondary')}
+          ${alternativeZone() ? knopf(`Andere Parkfläche: ${alternativeZone().name}`, `zone:${alternativeZone().id}`, 'secondary') : ''}
+          ${knopf('Stopp verwerfen', 'verwerfen', 'secondary')}
+        </div>
+      </section>
     `
   }
   // 14 – GESPERRTE LADEZONE
   if (seite === 14) {
+    if (!zone) return `${titel('Parkfläche nicht gefunden', 'Bitte starte eine neue Suche.')}`
     return `
       ${titel(
         zone.name,
@@ -1238,8 +1319,7 @@ function seitenInhalt() {
         true
       )}
       <div class="aktionen unten">
-        ${knopf('Zone A prüfen · 120 m', 'zone:A')}
-        ${knopf('Zone B prüfen · 180 m', 'zone:B', 'secondary')}
+        ${knopf('Andere Parkflächen ansehen', 'liste', 'secondary')}
       </div>
     `
   }
@@ -1300,143 +1380,163 @@ function seitenInhalt() {
       </div>
     `
   }
-  // 17 – LIEFERUNG ABGESCHLOSSEN
+  // 17 – LIEFERUNG ABGESCHLOSSEN – URBAN REDESIGN
   if (seite === 17) {
     return `
-      ${titel('Lieferung abgeschlossen', 'Dein Lieferstopp ist beendet.')}
-      <div class="bestaetigung">
-        <div class="erfolgskreis">${icon('check')}</div>
-        <h2>Geschafft!</h2>
-      </div>
-      <div class="card">
-        <h2>${sicher(zustand.adresse)}</h2>
-        <span class="badge erledigt">Lieferung abgeschlossen</span>
-      </div>
-      <div class="aktionen unten">
-        ${knopf('Nächste Lieferung planen', 'neu')}
-        ${knopf('Zur Startseite', 'start', 'secondary')}
-      </div>
+      <section class="ds-erfolg-seite">
+        <header class="ds-erfolg-kopf">
+          <span class="ds-erfolg-eyebrow">LIEFERSTOPP · ABGESCHLOSSEN</span>
+          <h1>Lieferung abgeschlossen</h1>
+          <p>Dein Lieferstopp ist beendet.</p>
+        </header>
+
+        <section class="ds-erfolg-hero" aria-label="Erfolgreich abgeschlossen">
+          <span class="ds-erfolg-symbol">${icon('check')}</span>
+          <div class="ds-erfolg-hero-text">
+            <span>ERFOLGREICH ERLEDIGT</span>
+            <h2>Geschafft!</h2>
+            <p>Deine Lieferung ist abgeschlossen.</p>
+          </div>
+        </section>
+
+        <section class="ds-erfolg-adresskarte">
+          <div class="ds-erfolg-adresskopf">
+            <span class="ds-erfolg-standorticon">${icon('pin')}</span>
+            <div>
+              <small>ABGESCHLOSSENER LIEFERSTOPP</small>
+              <strong>${sicher(zustand.adresse || 'Lieferadresse')}</strong>
+            </div>
+          </div>
+          <span class="ds-erfolg-status">${icon('check')} Lieferung abgeschlossen</span>
+        </section>
+
+        <div class="ds-erfolg-aktionen">
+          ${knopf('Nächste Lieferung planen', 'neu')}
+          ${knopf('Zur Startseite', 'start', 'secondary')}
+        </div>
+      </section>
     `
   }
   // 18 – MERKLISTE
   if (seite === 18) {
     return `
-      ${titel(
-        'Deine Merkliste',
-        'Deine gespeicherten Ladezonen auf einen Blick.'
-      )}
-      ${merkliste.length
-        ? merkliste.map((eintrag, index) => `
-            <div class="card merkkarte">
-              <button class="merk-oeffnen"
-                data-action="merk-oeffnen:${index}">
-                <strong>Zone ${sicher(eintrag.zone)}</strong>
-                <span>${sicher(eintrag.adresse)}</span>
-                <small>Details ansehen →</small>
-              </button>
-              <button class="entfernen"
+      <section class="ds-profil-head">
+        <span class="ds-profil-eyebrow">DEINE GESPEICHERTEN PARKFLÄCHEN</span>
+        <h1>Merkliste</h1>
+        <p>Gespeicherte Parkflächen schnell wiederfinden.</p>
+      </section>
+      ${merkliste.length ? `
+        <div class="ds-merk-counter">${merkliste.length} ${merkliste.length === 1 ? 'Eintrag' : 'Einträge'} gespeichert</div>
+        <section class="ds-merk-liste" aria-label="Gespeicherte Parkflächen">
+          ${merkliste.map((eintrag, index) => `
+            <article class="ds-merk-item">
+              <div class="ds-merk-marker" aria-hidden="true">${icon('pin')}</div>
+              <div class="ds-merk-inhalt">
+                <strong>${sicher(eintrag.standortName || eintrag.standortId || 'Ältere Parkfläche')}</strong>
+                <p>${sicher(eintrag.adresse)}</p>
+                <button class="ds-merk-link" type="button" data-action="merk-oeffnen:${index}">
+                  Details ansehen →
+                </button>
+              </div>
+              <button class="ds-merk-entfernen" type="button"
                 data-action="merk-loeschen:${index}"
-                aria-label="Zone aus Merkliste entfernen">
-                ×
-              </button>
-            </div>
-          `).join('')
-        : `
-          <div class="card">
-            <h2>Noch keine gespeicherten Zonen</h2>
-            <p>
-              Öffne eine Zone und tippe auf
-              „In Merkliste speichern“.
-            </p>
-          </div>
-        `}
-      ${hinweis(
-        'Vor jedem Stopp prüfen: Zeitfenster und Einschränkungen können sich ändern.'
-      )}
-      <div class="aktionen unten">
-        ${knopf('Weitere Ladezonen suchen', 'start')}
-      </div>
+                aria-label="Parkfläche aus Merkliste entfernen"
+                title="Aus Merkliste entfernen">×</button>
+            </article>
+          `).join('')}
+        </section>
+      ` : `
+        <section class="ds-merk-leer">
+          <div class="ds-merk-leericon">${icon('herz')}</div>
+          <h2>Noch keine Parkflächen gespeichert</h2>
+          <p>Wenn du eine Parkfläche öffnest, kannst du sie dort zur Merkliste hinzufügen.</p>
+        </section>
+      `}
+      <p class="ds-merk-hinweis">Parkregeln und die aktuelle Nutzbarkeit immer vor Ort prüfen.</p>
     `
   }
   // 19 – FAHRZEUGPROFIL
   if (seite === 19) {
     return `
-      ${titel(
-        'Dein Fahrzeug',
-        'Die wichtigsten Angaben für deine Lieferung.'
-      )}
-      <div class="fahrzeugkarte">
-        ${icon('fahrzeug')}
-        <h2>${sicher(zustand.fahrzeug.name)}</h2>
-        <p>Für kurze Stopps in der Stadt</p>
-      </div>
-      <form id="fahrzeugformular" class="fahrzeugformular">
-        <div class="card">
+      <section class="ds-profil-head">
+        <span class="ds-profil-eyebrow">DEIN LIEFERFAHRZEUG</span>
+        <h1>Fahrzeugprofil</h1>
+        <p>Verwalte deine Fahrzeugangaben für die Lieferplanung.</p>
+      </section>
+      <section class="ds-fahrzeug-hero">
+        <div class="ds-fahrzeug-icon">${icon('fahrzeug')}</div>
+        <div class="ds-fahrzeug-hero-text">
+          <small>AKTUELLES FAHRZEUG</small>
+          <strong>${sicher(zustand.fahrzeug.name)}</strong>
+          <span>${sicher(zustand.fahrzeug.typ)} · ${sicher(zustand.fahrzeug.gewicht)}</span>
+        </div>
+      </section>
+      <form id="fahrzeugformular" class="ds-fahrzeug-form">
+        <h2>Fahrzeugangaben bearbeiten</h2>
+        <div class="ds-fahrzeug-feld">
           <label for="fahrzeugname">Fahrzeugname</label>
-          <input id="fahrzeugname" name="name"
-            required maxlength="60"
+          <input id="fahrzeugname" name="name" required maxlength="60"
             value="${sicher(zustand.fahrzeug.name)}">
+        </div>
+        <div class="ds-fahrzeug-feld">
           <label for="fahrzeugtyp">Fahrzeugtyp</label>
           <select id="fahrzeugtyp" name="typ">
-            ${['Lieferwagen', 'Personenwagen', 'Lastwagen']
-              .map((typ) => `
-                <option value="${typ}"
-                  ${zustand.fahrzeug.typ === typ ? 'selected' : ''}>
-                  ${typ}
-                </option>
-              `).join('')}
-          </select>
-          <label for="fahrzeuggewicht">Gesamtgewicht</label>
-          <select id="fahrzeuggewicht" name="gewicht">
-            ${['Bis 3,5 t', 'Über 3,5 t']
-              .map((gewicht) => `
-                <option value="${gewicht}"
-                  ${zustand.fahrzeug.gewicht === gewicht ? 'selected' : ''}>
-                  ${gewicht}
-                </option>
-              `).join('')}
+            ${['Lieferwagen', 'Personenwagen', 'Lastwagen'].map((typ) => `
+              <option value="${typ}" ${zustand.fahrzeug.typ === typ ? 'selected' : ''}>${typ}</option>
+            `).join('')}
           </select>
         </div>
-        ${hinweis(
-          'Vergleiche das zulässige Gewicht und die Nutzungszeiten mit deinem Fahrzeug.'
-        )}
-        <button class="button primary" type="submit">
-          Speichern und Lieferung planen
-        </button>
+        <div class="ds-fahrzeug-feld">
+          <label for="fahrzeuggewicht">Gesamtgewicht</label>
+          <select id="fahrzeuggewicht" name="gewicht">
+            ${['Bis 3,5 t', 'Über 3,5 t'].map((gewicht) => `
+              <option value="${gewicht}" ${zustand.fahrzeug.gewicht === gewicht ? 'selected' : ''}>${gewicht}</option>
+            `).join('')}
+          </select>
+        </div>
+        <p class="ds-fahrzeug-hinweis">Zulässiges Gewicht und örtliche Parkbedingungen vor dem Halten prüfen.</p>
+        <button class="button primary ds-fahrzeug-speichern" type="submit">Speichern und Lieferung planen →</button>
       </form>
     `
   }
   // 20 – INFO UND HILFE
   return `
-    ${titel(
-      'Gut zu wissen',
-      'So begleitet dich DeliverySpot im Lieferalltag.'
-    )}
-    <div class="card">
-      <h2>1. Lieferziel auswählen</h2>
-      <p>Gib Strasse und Hausnummer in der Stadt Bern ein.</p>
+    <div class="ds-info-page">
+      <header class="ds-info-hero">
+        <div class="ds-info-eyebrow">DELIVERYSPOT · HILFE</div>
+        <h1>Gut zu wissen</h1>
+        <p>Dein Begleiter für eine übersichtliche Lieferplanung in Bern.</p>
+        <div class="ds-info-hero-bottom">${icon('info')} <span>Einfach planen. Sicher vor Ort prüfen.</span></div>
+      </header>
+
+      <section class="ds-info-section" aria-labelledby="ds-info-ablauf">
+        <h2 id="ds-info-ablauf" class="ds-info-section-title">So funktioniert DeliverySpot</h2>
+        <div class="ds-info-steps">
+          <article class="ds-info-step">
+            <span class="ds-info-step-number">01</span>
+            <div><h3>Lieferziel auswählen</h3><p>Gib Strasse und Hausnummer in der Stadt Bern ein.</p></div>
+          </article>
+          <article class="ds-info-step">
+            <span class="ds-info-step-number">02</span>
+            <div><h3>Ladezonen vergleichen</h3><p>Prüfe Entfernung, bekannte Angaben und die Beschilderung.</p></div>
+          </article>
+          <article class="ds-info-step">
+            <span class="ds-info-step-number">03</span>
+            <div><h3>Stopp planen und liefern</h3><p>Wähle eine Parkfläche und prüfe sie bei deiner Ankunft.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="ds-info-section" aria-labelledby="ds-info-fragen">
+        <h2 id="ds-info-fragen" class="ds-info-section-title">Häufige Fragen</h2>
+        <div class="ds-info-faq-list">
+          <article class="ds-info-faq"><h3>Ist eine Zone automatisch frei?</h3><p>Nein. Die Belegung prüfst du vor Ort.</p></article>
+          <article class="ds-info-faq"><h3>Kann ich einen Platz reservieren?</h3><p>Nein. Deine Auswahl plant nur den Stopp.</p></article>
+          <article class="ds-info-faq"><h3>Was öffnet der Google-Maps-Button?</h3><p>Die Routenplanung zu deiner gefundenen Lieferadresse.</p></article>
+        </div>
+      </section>
+      <div class="ds-info-actions">${knopf('Lieferung planen', 'start')}</div>
     </div>
-    <div class="card">
-      <h2>2. Ladezonen vergleichen</h2>
-      <p>Prüfe Entfernung, bekannte Angaben und die Beschilderung.</p>
-    </div>
-    <div class="card">
-      <h2>3. Stopp planen und liefern</h2>
-      <p>Wähle eine Zone und prüfe sie bei deiner Ankunft.</p>
-    </div>
-    <div class="card">
-      <h2>Ist eine Zone automatisch frei?</h2>
-      <p>Nein. Die Belegung prüfst du vor Ort.</p>
-    </div>
-    <div class="card">
-      <h2>Kann ich einen Platz reservieren?</h2>
-      <p>Nein. Deine Auswahl plant nur den Stopp.</p>
-    </div>
-    <div class="card">
-      <h2>Was öffnet der Google-Maps-Button?</h2>
-      <p>Die Routenplanung zu deiner gefundenen Lieferadresse.</p>
-    </div>
-    ${knopf('Lieferung planen', 'start')}
   `
 }
 // ==================================================
@@ -1485,19 +1585,13 @@ function rendern() {
       </div>
       <header class="kopf">
         ${zustand.seite === 1
-          ? `<span class="logo urban-logo" aria-label="DeliverySpot-Logo">
-              <svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-                <path d="M20 4 34 11.5v17L20 36 6 28.5v-17Z" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/>
-                <path d="M6.5 12 20 19.5 33.5 12M20 19.5V35" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                <path d="M13 8 27 15.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-              </svg>
-            </span>`
+          ? '<span class="logo">D</span>'
           : `
             <button class="zurueck" data-action="zurueck"
               aria-label="Zurück">←</button>
           `}
-        <div class="urban-brandtext"><strong>DeliverySpot</strong>${zustand.seite === 1 ? '<small>SMART DELIVERY · BERN</small>' : ''}</div>
-        ${zustand.seite === 1 ? '' : '<span class="stadt">Bern</span>'}
+        <strong>DeliverySpot</strong>
+        <span class="stadt">Bern</span>
       </header>
       <main>
         ${parkingTimer.aktiv && ![10, 13].includes(zustand.seite) ? `
@@ -1522,6 +1616,25 @@ function rendern() {
     })
   }
   spracheAnwenden(zustand.seite === 1, rendern)
+
+  // Bestehende Sprachauswahl aus i18n.js rechts neben dem Logo anzeigen.
+  // Die Original-Events und das Speichern der Sprache bleiben erhalten.
+  if (zustand.seite === 1) {
+    const auswahlBereich = app.querySelector('.sprachwahl')
+    const ziel = app.querySelector('.kopf')
+    const auswahl = auswahlBereich?.querySelector('#app-sprache')
+    if (auswahlBereich && ziel && auswahl) {
+      const kuerzel = { de: 'DE', fr: 'FR', it: 'IT', rm: 'RM', en: 'EN' }
+      Array.from(auswahl.options).forEach(option => {
+        option.textContent = kuerzel[option.value] || option.value.toUpperCase()
+      })
+      // Label komplett aus dem DOM entfernen, nicht nur visuell ausblenden.
+      auswahlBereich.querySelector('label')?.remove()
+      auswahl.setAttribute('aria-label', 'Sprache auswählen')
+      auswahlBereich.classList.add('ds-header-language')
+      ziel.appendChild(auswahlBereich)
+    }
+  }
 }
 function karteZeichnen() {
   const element = document.querySelector('#karte')
@@ -1561,14 +1674,14 @@ function karteZeichnen() {
     direction: 'top'
   })
   const grenzen = L.latLngBounds([position])
-  const sichtbar = [3, 7].includes(zustand.seite)
+  const sichtbar = [3, 4, 7].includes(zustand.seite)
     ? passendeZonen()
-    : zonen
+    : aktuelleZone() ? [aktuelleZone()] : []
   sichtbar.forEach((zone) => {
     const punkt = zonenPosition(zone)
     grenzen.extend(punkt)
     const ausgewaehlt =
-      [8, 9, 11, 12, 14].includes(zustand.seite) &&
+      [8, 9, 10, 11, 12, 13, 14].includes(zustand.seite) &&
       zustand.zone === zone.id
     const marker = L.marker(punkt, {
       keyboard: true,
@@ -1580,7 +1693,7 @@ function karteZeichnen() {
           <span class="
             ${zone.gesperrt ? 'marker-gesperrt' : ''}
             ${ausgewaehlt ? 'marker-ausgewaehlt' : ''}
-          ">${zone.id}</span>
+          ">${sicher(zone.nummer)}</span>
         `,
         iconSize: [34, 34],
         iconAnchor: [17, 17]
@@ -1588,7 +1701,7 @@ function karteZeichnen() {
     }).addTo(karte)
     marker.on('click', () => zoneOeffnen(zone.id))
   })
-  if ([9, 12].includes(zustand.seite)) {
+  if ([9, 12].includes(zustand.seite) && aktuelleZone()) {
     L.polyline(
       [zonenPosition(aktuelleZone()), position],
       {
@@ -1606,22 +1719,18 @@ function karteZeichnen() {
 // ==================================================
 // FAVORITEN UND MERKLISTE
 // ==================================================
-function istGemerkt(zone) {
-  return merkliste.some((eintrag) =>
-    eintrag.zone === zone &&
-    eintrag.adresse === zustand.adresse
-  )
+function istGemerkt(standortId) {
+  return merkliste.some(e => e.standortId === standortId)
 }
 function merklisteUmschalten() {
-  if (!zustand.position) return
-  if (istGemerkt(zustand.zone)) {
-    merkliste = merkliste.filter((eintrag) =>
-      !(eintrag.zone === zustand.zone &&
-        eintrag.adresse === zustand.adresse)
-    )
+  const zone = aktuelleZone()
+  if (!zustand.position || !zone) return
+  if (istGemerkt(zone.id)) {
+    merkliste = merkliste.filter(e => e.standortId !== zone.id)
   } else {
     merkliste.push({
-      zone: zustand.zone,
+      standortId: zone.id,
+      standortName: zone.name,
       adresse: zustand.adresse,
       position: [...zustand.position]
     })
@@ -1629,12 +1738,21 @@ function merklisteUmschalten() {
   speichern('ds-merkliste', merkliste)
   rendern()
 }
+
 function adresseMerken() {
-  if (!zustand.position) return
-  if (!adressFavoriten.includes(zustand.adresse)) {
+  if (!zustand.adresse || !zustand.position) return
+
+  if (adressFavoriten.includes(zustand.adresse)) {
+    // Adresse aus Favoriten entfernen
+    adressFavoriten = adressFavoriten.filter(
+      adresse => adresse !== zustand.adresse
+    )
+  } else {
+    // Adresse als Favorit speichern
     adressFavoriten.push(zustand.adresse)
-    speichern('deliveryspot-favoriten', adressFavoriten)
   }
+
+  speichern('deliveryspot-favoriten', adressFavoriten)
   rendern()
 }
 // ==================================================
@@ -1790,7 +1908,7 @@ app.addEventListener('click', (event) => {
       zustand.treffer = []
       zustand.radius = 500
       zustand.parkdauer = 0
-      zustand.zone = 'A'
+      zustand.zone = null
       verlauf = []
       geheZu(1, false)
       break
@@ -1805,7 +1923,12 @@ app.addEventListener('click', (event) => {
       zustand.treffer = []
       letzteAdresseSpeichern(zustand.adresse)
       zonenAktualisieren()
-      zoneOeffnen(eintrag.zone)
+      if (eintrag.standortId && zonen.some(z => z.id === eintrag.standortId)) {
+        zoneOeffnen(eintrag.standortId)
+      } else {
+        geheZu(18)
+        window.alert('Dieser gespeicherte Standort ist in den aktuellen Standortdaten nicht mehr vorhanden.')
+      }
       break
     }
     case 'merk-loeschen':
