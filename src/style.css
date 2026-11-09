@@ -1680,3 +1680,152 @@ a.button {
 .ds-meldung-aktionen .button.primary { background:#ff8838; }
 .ds-meldung-aktionen .button.secondary { background:#fff0e4; border:1px solid #f2e3d7; }
 @media(max-width:350px) { .ds-meldung-hero { padding:18px 14px; } .ds-meldung-hero h1 { font-size:19px; } .ds-meldung-naechster-schritt { padding:17px 14px; } }
+
+/* ============================================================
+   RESPONSIVE LAYOUT – Desktop, Tablet und Smartphone
+   Die bisherigen Komponenten und Farben bleiben erhalten.
+   ============================================================ */
+.app main, .app main > *, .app .zonentext { min-width: 0; }
+.app .ds-layout-vor, .app .ds-layout-nach,
+.app .ds-layout-karte { display: contents; }
+.app .karte { width: 100%; }
+.app main input, .app main select, .app main textarea { max-width: 100%; }
+
+@media (max-width: 999px) {
+  .app[data-seite="4"] .ds-layout-karte { display: none; }
+}
+@media (max-width: 599px) {
+  .app { max-width: none; margin: 0; min-height: 100dvh; border-radius: 0; }
+  .app main { padding-left: 20px; padding-right: 20px; }
+  .app main input, .app main select, .app main textarea { font-size: 16px; }
+  .app > .navigation { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+}
+@media (min-width: 600px) and (max-width: 999px) {
+  .app { width: calc(100% - 32px); max-width: 760px; margin: 16px auto;
+    min-height: calc(100dvh - 32px); border-radius: 24px; }
+  .app main { padding: 16px 32px 32px; }
+  .app .karte { height: 350px; }
+}
+@media (min-width: 1000px) {
+  .app {
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) minmax(420px, 560px);
+    grid-template-rows: auto auto 1fr;
+    align-content: start;
+    width: calc(100% - 48px);
+    max-width: 1480px;
+    min-height: calc(100dvh - 48px);
+    margin: 24px auto;
+    border-radius: 24px;
+    overflow: visible;
+    box-shadow: 0 20px 60px rgb(25 43 67 / 8%);
+  }
+  .app > .statuszeile {
+    grid-area: 1 / 1 / 2 / -1;
+    padding: 16px 32px 0;
+  }
+  .app > .kopf {
+    grid-area: 2 / 1;
+    align-self: center;
+    min-width: 0;
+    padding: 20px 32px;
+  }
+  .app > .navigation {
+    grid-area: 2 / 2;
+    position: static;
+    align-self: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    z-index: auto;
+  }
+  .app > .navigation button { min-height: 52px; border-radius: 14px; }
+  .app > .navigation button:hover { background: #e8edf2; }
+  .app > .navigation button[aria-current="page"] { background: #fff0e4; }
+  .app > .navigation small { font-size: 12px; }
+  .app > main {
+    grid-area: 3 / 1 / 4 / -1;
+    align-self: start;
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 24px 32px 40px;
+  }
+  .app > main.ds-main-mit-karte { max-width: none; }
+  .app .ds-layout {
+    display: grid;
+    grid-template-columns: minmax(310px, 400px) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    gap: 20px 28px;
+    align-items: start;
+  }
+  .app .ds-layout-vor, .app .ds-layout-nach {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  .app .ds-layout-vor { grid-area: 1 / 1; }
+  .app .ds-layout-nach { grid-area: 2 / 1; }
+  .app .ds-layout-karte {
+    display: block;
+    grid-area: 1 / 2 / 3 / 3;
+    position: sticky;
+    top: 24px;
+    min-width: 0;
+  }
+  .app .ds-layout-karte .karte {
+    height: clamp(480px, 68dvh, 740px);
+    margin: 0;
+    border-radius: 18px;
+  }
+  .app .ds-layout-karte > .karte { border: 1px solid #dce4ec; }
+  .app .ds-layout-karte > section { margin: 0; }
+  .app .start-hero h1 { font-size: clamp(34px, 3vw, 44px); line-height: 1.12; }
+  .app .start-hero p { max-width: 38ch; line-height: 1.65; }
+  .app .ds-merk-liste {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .app .home-indikator { display: none; }
+}
+@media (min-width: 1250px) {
+  .app .ds-layout { grid-template-columns: minmax(350px, 440px) minmax(0, 1fr); gap: 24px 36px; }
+  .app > main { padding: 28px 40px 48px; }
+}
+/* Desktop zeigt Karte und Liste gleichzeitig; Filter bleibt erreichbar. */
+@media (min-width: 1000px) {
+  .app .tabs[aria-label="Ergebnisansicht"] { grid-template-columns: 1fr; }
+  .app .tabs[aria-label="Ergebnisansicht"] [data-action="karte"],
+  .app .tabs[aria-label="Ergebnisansicht"] [data-action="liste"] { display: none; }
+}
+/* Desktop: gesamte Browserfläche nutzen */
+@media (min-width: 1000px) {
+  html,
+  body,
+  #app {
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+  }
+
+  .app {
+    width: 100%;
+    max-width: none;
+    min-height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .app > main.ds-main-mit-karte {
+    max-width: none;
+  }
+
+  .app .ds-layout-karte .karte {
+    height: max(480px, calc(100dvh - 180px));
+  }
+}

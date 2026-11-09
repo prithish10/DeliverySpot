@@ -1104,7 +1104,7 @@ function seitenInhalt() {
         `${zustand.adresse} · Suchradius ${zustand.radius} m`
       )}
       ${tabs(seite === 4 ? 'liste' : 'karte')}
-      ${seite !== 4 ? kartenHTML(true) : ''}
+      ${kartenHTML(true)}
       <h2>
         ${liste.length} ${liste.length === 1 ? 'Zone' : 'Zonen'}
         im Umkreis von ${zustand.radius} m
@@ -1593,7 +1593,51 @@ function navigation() {
   `
 }
 let karte = null
+let kartenBeobachter = null
+let kartenFrame = null
+
+// Bestehende Elemente gruppieren; Reihenfolge und Events bleiben erhalten.
+function bildschirmLayoutVorbereiten() {
+  const element = app.querySelector('#karte')
+  if (!element) return
+  const kartenBlock = element.closest('.ds-detail-mapcard, .ds-weg-mapcard') || element
+  const bereich = kartenBlock.parentElement
+  const kinder = [...bereich.children]
+  const index = kinder.indexOf(kartenBlock)
+  const davor = document.createElement('div')
+  const danach = document.createElement('div')
+  const kartenSpalte = document.createElement('div')
+  davor.className = 'ds-layout-vor'
+  danach.className = 'ds-layout-nach'
+  kartenSpalte.className = 'ds-layout-karte'
+  bereich.classList.add('ds-layout')
+  kinder.slice(0, index).forEach(kind => davor.appendChild(kind))
+  kinder.slice(index + 1).forEach(kind => danach.appendChild(kind))
+  kartenSpalte.appendChild(kartenBlock)
+  bereich.append(davor, kartenSpalte, danach)
+  app.querySelector('main').classList.add('ds-main-mit-karte')
+}
+
+function kartengroesseBeobachten() {
+  const element = app.querySelector('#karte')
+  if (!element) return
+  kartenBeobachter = new ResizeObserver(() => {
+    if (kartenFrame !== null) cancelAnimationFrame(kartenFrame)
+    kartenFrame = requestAnimationFrame(() => {
+      kartenFrame = null
+      if (!element.isConnected || !element.clientWidth || !element.clientHeight) return
+      // Die mobile Listenansicht erzeugt ihre Karte erst beim Verbreitern.
+      if (!karte) karteZeichnen()
+      karte?.invalidateSize({ pan: false })
+    })
+  })
+  kartenBeobachter.observe(element)
+}
 function rendern() {
+  kartenBeobachter?.disconnect()
+  kartenBeobachter = null
+  if (kartenFrame !== null) cancelAnimationFrame(kartenFrame)
+  kartenFrame = null
   if (karte) {
     karte.remove()
     karte = null
@@ -1601,7 +1645,7 @@ function rendern() {
   const ohneNavigation = [5, 6, 9, 10, 12, 13, 15, 16, 17, 21]
     .includes(zustand.seite)
   app.innerHTML = `
-    <div class="app">
+    <div class="app" data-seite="${zustand.seite}">
       <div class="statuszeile">
         <span>LIEFERN. EINFACHER.</span>
         <span>${uhrzeit()}</span>
@@ -1628,7 +1672,9 @@ function rendern() {
       <div class="home-indikator" aria-hidden="true"></div>
     </div>
   `
+  bildschirmLayoutVorbereiten()
   karteZeichnen()
+  kartengroesseBeobachten()
   if (zustand.seite === 21) {
     navAnsichtAktualisieren()
     requestAnimationFrame(() => {
@@ -1661,7 +1707,7 @@ function rendern() {
 }
 function karteZeichnen() {
   const element = document.querySelector('#karte')
-  if (!element) return
+  if (!element || !element.clientWidth || !element.clientHeight) return
   const istNavigation = zustand.seite === 21
   const position = zustand.position || [46.948, 7.4474]
   karte = L.map(element, {
